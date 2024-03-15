@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIRTBAG</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+        }
+        #quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .options {
+            margin-top: 20px;
+        }
+        .option {
+            display: block;
+            margin: 5px auto;
+            padding: 10px 20px;
+            background-color: #444;
+            border: 1px solid #888;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: #555;
+        }
+        .active {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <h1>The Choss Challenge</h1>
+    <div>
+        <button id="yosemiteBtn">Yosemite Valley</button>
+        <button id="tahoeBtn">Lake Tahoe</button>
+        <button id="sierrasBtn">High Sierras</button>
+        <button id="jtreeBtn">J-Tree</button>
+        <button id="sfbayBtn">SF Bay</button>
+        <button id="eastsideBtn">East Side</button>
+        <button id="sonoraBtn">Sonora</button>
+        <button id="tuolumneBtn">Tuolumne</button>
+        <p id="streak">Streak: 0</p>
+    </div>
+    <h2 id="climb-name"></h2>
+    <div class="options">
+        <div class="option"></div>
+        <div class="option"></div>
+        <div class="option"></div>
+        <div class="option"></div>
+    </div>
+    <p id="result"></p>
+</div>
+
+<script>
+    var yosemiteRegions = [
+{ name: "The Nose", location: "El Capitan"},
+{ name: "Freerider", location: "El Capitan"},
+{ name: "Salathé Wall", location: "El Capitan"},
+{ name: "Astroman", location: "Washington Column"},
+{ name: "Golden Corners (Blue Collar Free)", location: "Ribbon Falls Area"},
+{ name: "Golden Gate", location: "El Capitan"},
+{ name: "Sons of Yesterday", location: "Royal Arches"},
+{ name: "Serenity Crack", location: "Royal Arches"},
+{ name: "The North Face", location: "The Rostrum"},
+{ name: "Central Pillar of Frenzy", location: "Cathedral Area"},
+{ name: "Separate Reality", location: "Wildcat Falls & Above the Cookie"},
+{ name: "Regular Northwest Face of Half Dome (RNWF)", location: "Half Dome"},
+{ name: "Steck-Salathe", location: "Sentinel Rock"},
+{ name: "Magic Mushroom", location: "El Capitan"},
+{ name: "West Face", location: "Leaning Tower"},
+{ name: "The Shield", location: "El Capitan"},
+{ name: "Reed's Pinnacle-Direct Route", location: "Reed's Pinnacle"},
+{ name: "Butterballs", location: "Cookie Area"},
+{ name: "Lost Arrow Spire Direct", location: "Yosemite Falls Area"},
+{ name: "Outer Limits", location: "Cookie Area"},
+{ name: "West Face", location: "El Capitan"},
+{ name: "Northeast Buttress", location: "Cathedral Area"},
+{ name: "Voyager", location: "Leaning Tower"},
+{ name: "Heart Route (Free)", location: "El Capitan"},
+{ name: "Freestone (Geek Towers, Left)", location: "Yosemite Falls Area"},
+{ name: "Gaia", location: "Cathedral Area"},
+{ name: "Sacherer Cracker", location: "El Capitan"},
+{ name: "The Phoenix", location: "Cascade Area"},
+{ name: "Muir Wall", location: "El Capitan"},
+{ name: "Mescalito", location: "El Capitan"},
+{ name: "Wings of Steel", location: "El Capitan"},
+{ name: "Crest Jewel (and Crest Jewel Direct)", location: "North Dome"},
+{ name: "Moby Dick Center", location: "El Capitan"},
+{ name: "Mr. Natural", location: "Glacier Point Apron"},
+{ name: "Lost Arrow Tip", location: "Yosemite Falls Area"},
+{ name: "Father Time", location: "Cathedral Area"},
+{ name: "Super Natural", location: "Royal Arches"},
+{ name: "Meltdown", location: "Cascade Area"},
+{ name: "Wayward Son", location: "Lost Brother"},
+{ name: "Lunatic Fringe", location: "Reed's Pinnacle"},
+{ name: "Book of Hate", location: "Elephant Rock"},
+{ name: "Mr. Midwest", location: "El Capitan"},
+{ name: "The Moratorium", location: "Schultz's Ridge"},
+{ name: "El Niño", location: "El Capitan"},
+{ name: "Cookie Monster", location: "Cookie Area"},
+{ name: "El Corazon", location: "El Capitan"},
+{ name: "Autobahn", location: "Half Dome"},
+{ name: "Romulan Warbird", location: "Leaning Tower"},
+{ name: "Tales of Power", location: "Wildcat Falls & Above the Cookie"},
+{ name: "Hall of Mirrors", location: "Glacier Point Apron"},
+{ name: "Atlantic Ocean Wall", location: "El Capitan"},
+{ name: "Twilight Zone", location: "Cookie Area"},
+{ name: "Cosmic Debris", location: "The Chapel Wall"},
+{ name: "Blond Ike", location: "Half Dome"},
+{ name: "Salathe (pitch 1)", location: "El Capitan"},
+{ name: "Scarface (Free)", location: "Liberty Cap"},
+{ name: "Riding on the Wind", location: "The Widow's Tears Area"},
+{ name: "South Face", location: "Mount Watkins"},
+{ name: "Dream Team", location: "Leaning Tower"},
+{ name: "Growing Up", location: "Half Dome"},
+{ name: "New Dimensions", location: "Arch Rock"},
+{ name: "Tribal Rite", location: "El Capitan"},
+{ name: "Five and Dime", location: "Five and Dime Cliff"},
+{ name: "Jo Jo", location: "Washington Column"},
+{ name: "Crack-a-Go-Go", location: "Cookie Area"},
+{ name: "The Crucifix", location: "Cathedral Area"},
+{ name: "The Xue Way", location: "Half Dome"},
+{ name: "Stoner's Highway", location: "Cathedral Area"},
+{ name: "South Seas", location: "El Capitan"},
+{ name: "Wheat Thin", location: "Cookie Area"},
+{ name: "Blind Faith", location: "The Rostrum"},
+{ name: "The Final Frontier", location: "Leaning Tower"},
+{ name: "Afroman", location: "Washington Column"},
+{ name: "Teabag Wisdom", location: "Mount Watkins"},
+{ name: "Alien Finish", location: "The Rostrum"},
+{ name: "Catchy Corner", location: "Cookie Area"},
+{ name: "Book of Job", location: "Cathedral Area"},
+{ name: "Neptune", location: "El Capitan"},
+{ name: "Kauk-kulator", location: "The Rostrum"},
+{ name: "Westie Face", location: "Leaning Tower"},
+{ name: "TRON", location: "El Capitan"},
+{ name: "Crimson Cringe", location: "Cascade Area"},
+{ name: "Sunkist", location: "El Capitan"},
+{ name: "Quo Vadis", location: "El Capitan"},
+{ name: "Jolly Roger", location: "El Capitan"},
+{ name: "Gates of Delirium", location: "Ribbon Falls Area"},
+{ name: "Red Zinger", location: "Cookie Area"},
+{ name: "The Nexus AKA The Niels Tietze Memorial Route", location: "Leaning Tower"},
+{ name: "Crack of Doom", location: "Elephant Rock"},
+{ name: "Fish Crack", location: "Cascade Area"},
+{ name: "The Great Escape", location: "The Chapel Wall"},
+{ name: "Border Country", location: "Cathedral Area"},
+{ name: "Bunnell Boa", location: "Little Yosemite Valley"},
+{ name: "West Buttress", location: "El Capitan"},
+{ name: "The Good Book", location: "Camp 4 Area"},
+{ name: "Hotline", location: "Elephant Rock"},
+{ name: "Ephemeron", location: "El Capitan"},
+{ name: "Mark of the Beast", location: "Schultz's Ridge"},
+{ name: "Lost in America", location: "El Capitan"},
+{ name: "Midterm", location: "Arch Rock"},
+{ name: "Otherworld", location: "Parkline Slab"},
+{ name: "Mahtah", location: "Liberty Cap"},
+{ name: "Gripper", location: "Arch Rock"},
+{ name: "Manana", location: "Sentinel Creek Area"},
+{ name: "Yin-Yang", location: "Sentinel Creek Area"},
+{ name: "Tennessee Wall (P1: Tennessee Strings)", location: "Cookie Area"},
+{ name: "More Burly than Girly", location: "Leaning Tower"},
+{ name: "Scorched Earth", location: "El Capitan"},
+{ name: "Dust in the Wind", location: "Camp 4 Area"},
+{ name: "Modern Alchemy", location: "Cathedral Area"},
+{ name: "Killa Beez", location: "The Chapel Wall"},
+{ name: "New Diversions", location: "New Diversions"},
+{ name: "Freewheelin'", location: "Cathedral Area"},
+{ name: "Roulette", location: "Leaning Tower"},
+{ name: "King Snake", location: "Royal Arches"},
+{ name: "Tips", location: "This and That Cliff"},
+{ name: "Prime Directive", location: "Leaning Tower"},
+{ name: "Rock Neurotic", location: "El Capitan"},
+{ name: "Devil Waves", location: "Royal Arches"},
+{ name: "Crack of Mercy", location: "Elephant Rock"},
+{ name: "Switchblade", location: "The Chapel Wall"},
+{ name: "Empire", location: "Cathedral Area"},
+{ name: "Epidemia de Opiáceos", location: "Glacier Point Apron"},
+{ name: "Mother Earth", location: "Cathedral Area"},
+{ name: "Sight Reader", location: "Cathedral Area"},
+{ name: "Power Point", location: "Cathedral Area"},
+{ name: "Rocky Horror Show", location: "Pat and Jack Pinnacle"},
+{ name: "Finger Lickin'", location: "Finger Lickin' Area"}
+
+        // Add more routes for Yosemite here...
+    ];
+
+    var tahoeRegions = [
+{ name: "Corrugation Corner", location: " Lover's Leap "},
+{ name: "Traveler Buttress", location: " Lover's Leap "},
+{ name: "The Line", location: " Lover's Leap "},
+{ name: "One Hand Clapping", location: " Black Wall "},
+{ name: "Hospital Corner", location: " Lover's Leap "},
+{ name: "Silk Road (High Times)", location: " Calaveras Dome "},
+{ name: "Grand Illusion", location: " Sugarloaf Area "},
+{ name: "Wall of the Worlds", location: " Calaveras Dome "},
+{ name: "Black September", location: " Black Wall "},
+{ name: "The Fracture", location: " Sugarloaf Area "},
+{ name: "Surrealistic Pillar Direct", location: " Lover's Leap "},
+{ name: "Candyland", location: " Phantom Spires "},
+{ name: "Eeyore's Enigma", location: " Lover's Leap "},
+{ name: "Space Walk", location: "Eagle Lake Cliff "},
+{ name: "The Perfect Lie Back", location: " The Fortress "},
+{ name: "Bat Karma", location: " Cave Valley (aka Auburn Quarry) "},
+{ name: "Fear of Flying", location: " Phantom Spires "},
+{ name: "Cookie Mix", location: "South Star Wall "},
+{ name: "One Of These Days", location: " Cloudburst Canyon "},
+{ name: "Cannibals", location: "Snowshed Wall "},
+{ name: "Monkey Paws", location: "Snowshed Wall "},
+{ name: "Super Size Me", location: " The Emeralds "},
+{ name: "Tombstone Terror", location: " Lover's Leap "},
+{ name: "Boot Hill", location: " Lover's Leap "},
+{ name: "Warp Factor", location: "South Star Wall "},
+{ name: "Space Truckin'", location: "Eagle Lake Cliff "},
+{ name: "Tree Beard", location: "Cascade Cliff "},
+{ name: "Panic In Detroit", location: "Snowshed Wall "},
+{ name: "All American Finger Crack", location: "Emerald Point "},
+{ name: "Fantasia", location: " Lover's Leap "},
+{ name: "Peter Principle", location: "Snowshed Wall "},
+{ name: "Pillar of Society", location: " Lover's Leap "},
+{ name: "Schizophrenic Dike", location: " Calaveras Dome "},
+{ name: "Pump Lust", location: "Snowshed Wall "},
+{ name: "Taurus", location: " Sugarloaf Area "},
+{ name: "Radio Static", location: " The Emeralds "},
+{ name: "The Hand of God", location: " The Fortress "},
+{ name: "Vanishing Point", location: " Lover's Leap "},
+{ name: "Release the Lions", location: " Cave Valley (aka Auburn Quarry) "},
+{ name: "Karl's Overhang", location: " School Rock "},
+{ name: "Star Wars Crack", location: "South Star Wall "},
+{ name: "Space Invaders", location: " The Pie Shop "},
+{ name: "A Steep Climb Named Desire", location: "South Star Wall "},
+{ name: "Neutron", location: " Cloudburst Canyon "},
+{ name: "Made In Japan", location: "Space Wall "},
+{ name: "Bronco", location: "South Star Wall "},
+{ name: "Freak Show", location: " Lover's Leap "},
+{ name: "Seams to Me", location: "Eagle Lake Cliff "},
+{ name: "Babylon", location: "Babylon Crag "},
+{ name: "Toby Tops Out", location: " The Emeralds "},
+{ name: "Lesbian Love", location: " Phantom Spires "},
+{ name: "Delivering the Goods", location: " Mayhem Cove "},
+{ name: "Brain Child", location: "Snowshed Wall "},
+{ name: "Cajun Hell", location: " Mayhem Cove "},
+{ name: "Blaster Pals", location: " The Pie Shop "},
+{ name: "Lightning Dream", location: " Cloudburst Canyon "},
+{ name: "Silly Willy Crack", location: " Lover's Leap "},
+{ name: "Livin' A Dream", location: " Cloudburst Canyon "},
+{ name: "Taste The Pain", location: "South Star Wall "},
+{ name: "Dog Party", location: " Lover's Leap "},
+{ name: "Puppet On A String", location: "Snowshed Wall "},
+{ name: "God of Thunder, Pitch 2", location: " Lover's Leap "},
+{ name: "Cheat Code", location: " The Pie Shop "},
+{ name: "Just Add Water (aka Cookie Dough)", location: "South Star Wall "},
+{ name: "Steppin' Stone", location: " Phantom Spires "},
+{ name: "Fine Line", location: " Calaveras Dome "},
+{ name: "Sun Wall Left", location: " The Fortress "},
+{ name: "Green Ice", location: " The Emeralds "},
+{ name: "Beast of Burden", location: " Sugarloaf Area "},
+{ name: "Handbook Of The Recently Deceased", location: " Bowman Valley "},
+{ name: "Huntin' Gator", location: " Mayhem Cove "},
+{ name: "Proton", location: " Cloudburst Canyon "},
+{ name: "There Goes The Neighborhood", location: " Black Wall "},
+{ name: "Penguin Lust", location: "The Road Cut"},
+{ name: "Das Rads", location: " Cave Valley (aka Auburn Quarry) "},
+{ name: "Crystal Crescent", location: " Slick Rock Dome "},
+{ name: "O.U.L.D.", location: " The Fortress "},
+{ name: "Freaky-Styly", location: " Elephant's Graveyard "},
+{ name: "Polish Princess", location: " Upper Bear River Reservoir "},
+{ name: "Yelp Of The Kelp", location: "Shark Wall "},
+{ name: "Fight the Power", location: " Lover's Leap "},
+{ name: "Starting Line", location: " Calaveras Dome "},
+{ name: "Dan-O-Bolt", location: " The Fortress "},
+{ name: "The A Bomb", location: "Shirley Canyon Cliffs "},
+{ name: "Full Moon", location: " Black Wall "},
+{ name: "Bliss Direct", location: " Black Wall "},
+{ name: "Alien Sex", location: "Space Wall "},
+{ name: "Neanderthal Dudes", location: "Space Wall "},
+{ name: "Aja", location: " Rainbow "},
+{ name: "Ultraviolet", location: " Wrights Lake "},
+{ name: "The Prow", location: " Wrights Lake "},
+{ name: "The Siren", location: " Phantom Spires "},
+{ name: "Seven and Seven", location: " Luther Rock "},
+{ name: "Jug-or-Not", location: " Bowman Valley "},
+{ name: "Moonshine", location: " Luther Rock "}
+
+        // Add more routes for Tahoe here...
+    ];
+
+    var sierrasRegions = [
+{ name: "Positive Vibrations", location: "Incredible Hulk "},
+{ name: "East Buttress", location: "Mt. Whitney "},
+{ name: "Evolution Traverse", location: "Mt. Darwin "},
+{ name: "Red Dihedral (aka Yggdrasil)", location: "Incredible Hulk "},
+{ name: "East Face", location: "Mt. Whitney "},
+{ name: "Hairline Free", location: "Mt. Whitney "},
+{ name: "Mithril Dihedral", location: "Mt. Russell "},
+{ name: "Fishhook Arete", location: "Mt. Russell "},
+{ name: "South Face", location: "Charlotte Dome "},
+{ name: "Sun Ribbon Arete", location: "Temple Crag "},
+{ name: "The Venturi Effect", location: "Incredible Hulk "},
+{ name: "Thunderbolt to Sill Traverse", location: "Thunderbolt Peak "},
+{ name: "Venusian Blind", location: "Temple Crag "},
+{ name: "North Arete", location: "Bear Creek Spire "},
+{ name: "Solar Flare", location: "Incredible Hulk "},
+{ name: "The Polish Route", location: "Incredible Hulk "},
+{ name: "Shield of Dreams", location: "Trapezoid Peak "},
+{ name: "Dark Star", location: "Temple Crag "},
+{ name: "Sunspot Dihedral", location: "Incredible Hulk "},
+{ name: "Southeast Face", location: "Clyde Minaret "},
+{ name: "Swiss Arete", location: "Mt. Sill "},
+{ name: "Bastille Buttress - Beckey Route", location: "Lone Pine Peak "},
+{ name: "Moon Goddess Arete", location: "Temple Crag "},
+{ name: "Free Radical", location: "Little Slide Spires "},
+{ name: "Harding Route", location: "Keeler Needle "},
+{ name: "North Arete", location: "Matterhorn Peak "},
+{ name: "Puff the Magic Dragon", location: "Trapezoid Peak "},
+{ name: "Green Thunder", location: "Incredible Hulk "},
+{ name: "Hairline", location: "Mt. Whitney "},
+{ name: "Michael Strassman Memorial Route", location: "Lone Pine Peak "},
+{ name: "Beeline", location: "Incredible Hulk "},
+{ name: "Up in Smoke", location: "Incredible Hulk "}
+
+        // Add more routes for Sierras here...
+    ];
+
+    var jtreeRegions = [
+{ name: "Double Cross", location: " The Old Woman "},
+{ name: "Illusion Dweller", location: " The Sentinel "},
+{ name: "Bird of Fire", location: " Isles in the Sky "},
+{ name: "Sail Away", location: "Hidden Tower "},
+{ name: "Leave it to Beaver (aka The Beaver)", location: " Sports Challenge Rock "},
+{ name: "Equinox", location: " Jerry's Quarry and Lost Pencil Areas "},
+{ name: "Touch and Go", location: "Touch and Go Face "},
+{ name: "O'Kelley's Crack", location: "Rusty Wall "},
+{ name: "Figures on a Landscape (aka Monkey on My Back)", location: " The Astro Domes "},
+{ name: "Coarse and Buggy", location: " Dihedral Rock "},
+{ name: "Heart of Darkness", location: "Conrad Rock - Heart of Darkness Corridor "},
+{ name: "Rubicon", location: "Rubicon Formation "},
+{ name: "Solid Gold", location: " The Astro Domes "},
+{ name: "Clean and Jerk", location: " Sports Challenge Rock "},
+{ name: "Tax Man", location: "IRS Wall "},
+{ name: "Wangerbanger", location: "Rusty Wall "},
+{ name: "EBGB's", location: "EBGB Block Area "},
+{ name: "Exorcist", location: " Hall of Horrors "},
+{ name: "Breakfast of Champions", location: " The Astro Domes "},
+{ name: "More Monkey than Funky", location: " Barker Dam Area "},
+{ name: "Heart and Sole", location: "Echo Rock - West Face "},
+{ name: "Stingray", location: "Iguana Dome "},
+{ name: "Hot Rocks", location: "Rock Hudson "},
+{ name: "The Acid Crack", location: " Arid Piles "},
+{ name: "Imaginary Voyage", location: "Imaginary Voyage Formation "},
+{ name: "Run For Your Life", location: "Tumbling Rainbow Formation "},
+{ name: "Big Moe", location: " Echo Cove "},
+{ name: "Asteroid Crack", location: "Asteroid Belt "},
+{ name: "Firewater Chimney", location: " The Valley of Kings "},
+{ name: "Swept Away", location: "Echo Rock - South Face "},
+{ name: "Father Figure", location: " Barker Dam Area "},
+{ name: "Sidewinder", location: " Steve Canyon "},
+{ name: "Perpetual Motion", location: " Virgin Islands Area "},
+{ name: "Ace of Spades", location: " White Cliffs of Dover "},
+{ name: "Vector", location: " Loveland "},
+{ name: "Between a Rock and a Hard Place", location: " Virgin Islands Area "},
+{ name: "Perfect Fingers", location: " Walt's Rocks "},
+{ name: "Dangling Woo Li Master", location: " Diarrhea Dome "},
+{ name: "Sole Fusion", location: "Echo Rock - South Face "},
+{ name: "The Maneater", location: "Maneater Rock "},
+{ name: "I Can't Believe It's a Girdle", location: "Freak Brothers Dome "},
+{ name: "Physical Graffiti", location: "Anasazi Wall "},
+{ name: "Astroturf", location: " The Astro Domes "},
+{ name: "Hidden Arch", location: " Houser Buttress Area "},
+{ name: "Alf's Arete", location: "IRS Wall "},
+{ name: "Where Have all the Cowboys Gone", location: " Saddle Rocks "},
+{ name: "Field and Stream", location: " White Cliffs of Dover "},
+{ name: "Throbbing Gristle", location: " Loveland "},
+{ name: "Tic Tic Boom", location: "Tumbling Rainbow Formation "},
+{ name: "Bikini Whale", location: "The Hidden Cliff "},
+{ name: "Crosstown Traffic", location: "Lost Horse Wall - Left Side "},
+{ name: "29 Palms", location: " Arid Piles "},
+{ name: "Trapeze", location: "Intersection Rock "},
+{ name: "Prime Real Estate", location: " The Land that Time Forgot "},
+{ name: "The Chameleon", location: " The Sentinel "},
+{ name: "The Lobster", location: " Sports Challenge Rock "},
+{ name: "Totally Tubular", location: " Loveland "},
+{ name: "The Last Stand", location: " The Valley of Kings "},
+{ name: "Such a Savage", location: " The Astro Domes "},
+{ name: "Space Mountain", location: " Saddle Rocks "},
+{ name: "White Rain", location: " Walt's Rocks "},
+{ name: "Scary Poodles", location: " Hemingway Buttress "},
+{ name: "Bighorn Dihedral", location: "Suicide Horn Rock "},
+{ name: "Baby Apes", location: " Peyote Cracks Formation "},
+{ name: "Hyperion", location: "Grey Giant "},
+{ name: "Black President", location: "Elephant Arches "},
+{ name: "Sun Runner", location: "The Wedge "},
+{ name: "Eureka!", location: "Rattlesnake Buttress "},
+{ name: "Desert Song", location: " The Sentinel "},
+{ name: "Up 40", location: "The Molar "},
+{ name: "Split Personality", location: " The Asylum "},
+{ name: "Mojave Queen", location: " Walt's Rocks "},
+{ name: "Presupposition", location: " Indian Cove Campground "},
+{ name: "Surface Tension", location: "Cyclops Rock "},
+{ name: "Warrior Eagle", location: "The Castle "},
+{ name: "The Bloodline", location: " Queen Mountain "},
+{ name: "Ionic Strength", location: "Atom Smasher Boulders "},
+{ name: "Black and Blue", location: "Afro Blues Wall (Northwest Face) "},
+{ name: "Black Diamond", location: " Queen Mountain "},
+{ name: "Days of Thunder", location: "Tumbling Rainbow Formation "},
+{ name: "Icon", location: " Queen Mountain "},
+{ name: "No Self Confidence", location: "The Flying Fortress "},
+{ name: "Poodle Smasher", location: "Poodle Smasher Area "},
+{ name: "The Highwayman", location: " Indian Cove Campground "},
+{ name: "The S Cracker", location: "The Tombstone "},
+{ name: "Heaven Can Wait", location: "The Tombstone "},
+{ name: "The Almighty (aka Mighty High)", location: "The Manure Pile "},
+{ name: "Catapult", location: "The Fortress "}
+
+        // Add routes for J-Tree here...
+    ];
+
+    var sfbayRegions = [
+{ name: "Beast of Burden", location: "The Bear "},
+{ name: "The Choss Whisperer", location: "Motown "},
+{ name: "The Bronze Hog", location: " Vent 5 "},
+{ name: "b. boy bypass", location: "The Bubble "},
+{ name: "Hailstone Arete", location: "Hailstone Rock "},
+{ name: "Kana Mota", location: "Wappo Tower "},
+{ name: "Tiny Dancer", location: "Blind Man's Bluff "},
+{ name: "Endless Bummer", location: "Endless Bummer Rock "},
+{ name: "Micro Aggression", location: "Kim's gym (aka Kym's Gym) "},
+{ name: "Pipeline", location: "Near Side "},
+{ name: "Better Than Sex.... Porpoises", location: "Emperor Boulder "},
+{ name: "Wubble", location: " Vent 5 "},
+{ name: "Peg Leg", location: "Shipwreck Wall "},
+{ name: "Crows Nest", location: "Shipwreck Wall "},
+{ name: "Yardarm", location: "Shipwreck Wall "},
+{ name: "Surf Safari", location: "Endless Bummer Rock "},
+{ name: "Clamydia", location: "Waterfall Cliff "},
+{ name: "Krokus", location: "Indian Rock "},
+{ name: "Above the Law", location: "Waterfall Cliff "},
+{ name: "Sex Porpoises", location: "Main Rock Mickey's"},
+{ name: "Albino", location: "Roadside Rock "},
+{ name: "5.12 face", location: "Lexington Rock "},
+{ name: "Railing Moss", location: " Boy Scout Rocks "},
+{ name: "Starfish Enterprise", location: "Tower of the People / The Nug "},
+{ name: "Egghead", location: "The Egg "},
+{ name: "Toxic Masculinity", location: "Kim's gym (aka Kym's Gym) "},
+{ name: "Money Shot", location: " Pine Canyon "},
+{ name: "Mickey's Beach Arete", location: "Main Rock Mickey's"},
+{ name: "Boromir", location: " Pine Canyon "},
+{ name: "Courtney", location: "Main Rock Mickey's"},
+{ name: "The Unnatural Act", location: " Glen Canyon "},
+{ name: "Scorpio Rising", location: "Main Rock Mickey's"},
+{ name: "Holy Mackerel", location: "Main Rock Mickey's"},
+{ name: "Redneck Rampage", location: " Pine Canyon "},
+{ name: "Deliverance", location: " Pine Canyon "},
+{ name: "The Emperor's New Clothes", location: "Emperor Boulder "},
+{ name: "I-12", location: " Indian Rock Park "},
+{ name: "Chameleon", location: " Boy Scout Rocks "},
+{ name: "Sign Language", location: "The Egg "},
+{ name: "Far Left Watercourse", location: " Indian Rock Park "},
+{ name: "Get Buck In The Yolk", location: "The Egg "},
+{ name: "This is your Brain on Drugs", location: "The Egg "},
+{ name: "Baby Driver", location: "Blind Man's Bluff "},
+{ name: "Captain Hook", location: "The Treasure Chest "},
+{ name: "Megalodon", location: "Main Rock Mickey's"},
+{ name: "Calistoga Rodeo", location: "Blind Man's Bluff "},
+{ name: "The Patriot", location: "Shipwreck Wall "},
+{ name: "Jason and the Argonauts", location: "The Bear "},
+{ name: "Mogolef", location: "Motown "},
+{ name: "Big Tuna", location: "Main Rock Mickey's"},
+{ name: "Naked and Disfigured", location: "Main Rock Mickey's"},
+{ name: "Ultramega", location: " Table Rock "},
+{ name: "The Inner Game", location: "Cobblestone Wall "},
+{ name: "Jury Duty", location: " Sea Crag "},
+{ name: "Super Flower Blood Moon", location: "Tower of the People / The Nug "},
+{ name: "The Beast", location: "The Bear "}
+
+        // Add routes for SF Bay here...
+    ];
+
+    var eastsideRegions = [
+{ name: "Third Pillar, Regular Route", location: "Dana Plateau "},
+{ name: "Pratt's Crack", location: " Pine Creek Canyon "},
+{ name: "West Face", location: "Cardinal Pinnacle "},
+{ name: "Sheila", location: " Pine Creek Canyon "},
+{ name: "Southwest Arete", location: " Buttermilks Main "},
+{ name: "Looney Binge", location: "Eldorado Roof "},
+{ name: "Ecstasy", location: "Pratt's Crack / Dihedrals Area "},
+{ name: "John Fischer Memorial Route", location: " Pine Creek Canyon "},
+{ name: "John Fischer Memorial Route", location: "PSOM Slab "},
+{ name: "Queen of the Heartbreaks", location: "Pratt's Crack / Dihedrals Area "},
+{ name: "Bony Fingers", location: " Whitney Portal "},
+{ name: "King of the Jungle", location: "Cyanide Gully "},
+{ name: "O.R.G.asm", location: "Dihedrals "},
+{ name: "Towering Inferno", location: "Eldorado Roof "},
+{ name: "Boi-oi-oi-ing!", location: " Patricia Bowl "},
+{ name: "Blindspot", location: " Pine Creek Canyon "},
+{ name: "Gorgeous", location: "Gorgeous Towers "},
+{ name: "Wages of Skin", location: "Gong Show Wall "},
+{ name: "From Chocolate to Morphine", location: "Faulty Tower "},
+{ name: "Crack Kingdom", location: "Cardinal Pinnacle "},
+{ name: "High Gravity", location: "Dana Plateau "},
+{ name: "V8 Crack", location: "Cardinal Pinnacle "},
+{ name: "Atomic Gecko", location: "Planetarium / Gecko Wall "},
+{ name: "Holey Wars", location: "Mothership Cliff "},
+{ name: "Espresso Crack", location: " Little Egypt "},
+{ name: "Grindrite", location: "Gotham City "},
+{ name: "Pick Pocket", location: "Holy Trinity "},
+{ name: "Darshan (aka Ripoff)", location: "Upper Crust "},
+{ name: "Enterprise", location: "The Dilithium Crystal "},
+{ name: "Superfly", location: "Cracked Towers "},
+{ name: "Expressway", location: "Upper Crust "},
+{ name: "Slip 'n Slide", location: "Lower Elbow Room "},
+{ name: "Gong Show", location: "Gong Show Wall "},
+{ name: "Fight Club", location: "Mothership Cliff "},
+{ name: "Hair Raiser Buttress", location: " Granite Basin "},
+{ name: "Hair Raiser Buttress", location: " Granite Basin "},
+{ name: "Pneuma", location: " Mountain View Wall "},
+{ name: "Hardly Wallbanger", location: "Pub Wall "},
+{ name: "Give it to me Baby", location: "Supreme Wizard Formation "},
+{ name: "The Prow", location: "Cardinal Pinnacle "},
+{ name: "The Speed of Life", location: " Ellery Bowl "},
+{ name: "Cromagnon", location: " Dike Wall "},
+{ name: "Holey Mackerel", location: "Mothership Cliff "},
+{ name: "Borealis", location: "Great Wall of China "},
+{ name: "The Megaplex", location: "Mustache Wall "},
+{ name: "Lava Haul", location: "Flavin Haven "},
+{ name: "Flame Thrower", location: "Mustache Wall "},
+{ name: "Strike the Gong", location: "Gong Show Wall "},
+{ name: "Wacked Scenario", location: "Gorgeous Towers "},
+{ name: "Sex Packets", location: "Holy Trinity "},
+{ name: "The Brazilian", location: " Mountain View Wall "},
+{ name: "Excelsior", location: "Mothership Cliff "},
+{ name: "He She", location: "Gong Show Wall "},
+{ name: "Love Stinks", location: "Banana Belt "},
+{ name: "Coven (Seriously Though)", location: "Mustache Wall "},
+{ name: "Dust in the Wind", location: "Planetarium / Gecko Wall "},
+{ name: "Regular Route", location: " Pine Creek Canyon "},
+{ name: "Trailer Tramp", location: "Trailerpark "},
+{ name: "Modern Trad", location: " Patricia Bowl "},
+{ name: "Anything Goes", location: "Gong Show Wall "},
+{ name: "Disco Inferno", location: "Eldorado Roof "},
+{ name: "Fight or Flight", location: "Lower Elbow Room "},
+{ name: "Spaceballs", location: "Planetarium / Gecko Wall "},
+{ name: "There Goes the Neighborhood", location: "Monkey to Monk Cliff "},
+{ name: "Still Not A Player", location: "Diamond Face "},
+{ name: "It's Not The Wheat", location: "Mustache Wall "},
+{ name: "Copernicus", location: "Planetarium / Gecko Wall "}
+
+        // Add routes for East Side here...
+    ];
+
+    var sonoraRegions = [
+{ name: "AC Devil Dog", location: "The Grotto "},
+{ name: "Rawhide", location: "The Grotto "},
+{ name: "Soap on a Rope", location: "Jailhouse Rock "},
+{ name: "Fugitive", location: "Jailhouse Rock "},
+{ name: "Flight Simulator", location: "The Grotto "},
+{ name: "Jailbait", location: "Jailhouse Rock "},
+{ name: "Pangea", location: " Road 5N06 Area "},
+{ name: "Snake Bite", location: "The Grotto "},
+{ name: "Iron Junkie", location: "Jailhouse Rock "},
+{ name: "Whipping Boy", location: "Jailhouse Rock "},
+{ name: "Delirious", location: " Columns of the Giants "},
+{ name: "Squealer", location: "The Grotto "},
+{ name: "One Fine Day", location: " Chipmunk Flat "},
+{ name: "Peaceful Warrior", location: " Road 5N06 Area "},
+{ name: "Green Monster", location: " Road 5N06 Area "},
+{ name: "Insecurity", location: "Jailhouse Rock "},
+{ name: "Alcatraz", location: "Jailhouse Rock "},
+{ name: "Lethal Injection", location: "Jailhouse Rock "},
+{ name: "Flower Power", location: "Jailhouse Rock "},
+{ name: "You Insolent Peasant", location: " Chipmunk Flat "},
+{ name: "Cell Block", location: "Jailhouse Rock "},
+{ name: "The Juice", location: "Jailhouse Rock "},
+{ name: "Spin Doctor", location: " Columns of the Giants "},
+{ name: "Solstice", location: " Chipmunk Flat "},
+{ name: "Pulp Friction", location: "Jailhouse Rock "},
+{ name: "Misdemeanor", location: "Jailhouse Rock "},
+{ name: "Haul of Justice", location: "Jailhouse Rock "},
+{ name: "Talus Dweller", location: " Columns of the Giants "},
+{ name: "Jenn's Hooked", location: " Herring Creek Dome "},
+{ name: "Divine Microphone (aka the Warm-up)", location: " Columns of the Giants "},
+{ name: "Forced Entry", location: "Jailhouse Rock "},
+{ name: "Electric Chair", location: "Jailhouse Rock "},
+{ name: "Life Sentence", location: "Jailhouse Rock "},
+{ name: "Pardon", location: "Jailhouse Rock "},
+{ name: "La Dentista (aka Behemoth)", location: " Columns of the Giants "},
+{ name: "Blow of Death", location: " Columns of the Giants "},
+{ name: "Tinkerâ€™s Trough", location: " Columns of the Giants "},
+{ name: "Cassiopeia", location: " Chipmunk Flat "},
+{ name: "Spread Sheet", location: " Columns of the Giants "},
+{ name: "Crystal Planet", location: " Road 5N06 Area "},
+{ name: "Funny Man", location: "Midwall "},
+{ name: "Lumpy Gravy", location: " Road 5N06 Area "}
+
+        // Add routes for Sonora here...
+    ];
+
+    var tuolumneRegions = [
+{ name: "Matthes Crest Traverse - South to North", location: "Matthes Crest "},
+{ name: "Regular Route", location: " Fairview Dome "},
+{ name: "West Ridge", location: "Mt. Conness "},
+{ name: "West Crack", location: " DAFF Dome "},
+{ name: "Tenaya, Matthes, Cathedral Traverse", location: "Cathedral Range Enchainments "},
+{ name: "Southeast Buttress", location: " Cathedral Peak "},
+{ name: "Oz", location: "Drug Dome "},
+{ name: "Bachar-Yerian", location: " Medlicott Dome "},
+{ name: "Hobbit Book", location: " Mariuolumne Dome "},
+{ name: "On the Lamb", location: " Lamb Dome "},
+{ name: "Tuolumne Alpine Triple Crown", location: "Mt. Conness "},
+{ name: "Lucky Streaks", location: " Fairview Dome "},
+{ name: "Crescent Arch", location: " DAFF Dome "},
+{ name: "Peace", location: " Medlicott Dome "},
+{ name: "North Ridge of Matthes Crest", location: "Matthes Crest "},
+{ name: "South West Face (Harding) Route", location: "Mt. Conness "},
+{ name: "Potter in Wonderland", location: "Stately Pleasure Dome "},
+{ name: "Crying Time Again", location: " Lembert Dome "},
+{ name: "Blues Riff", location: "Phobos/Deimos Cliff "},
+{ name: "Far West Country", location: "Stately Pleasure Dome "},
+{ name: "Valinor", location: " Mariuolumne Dome "},
+{ name: "Bombs over Tokyo (1st pitch)", location: " DAFF Dome "},
+{ name: "You Asked For It", location: " Medlicott Dome "},
+{ name: "Blown Away", location: " DAFF Dome "},
+{ name: "The Gram Traverse", location: "Drug Dome "},
+{ name: "Direct Northwest Face", location: " Lembert Dome "},
+{ name: "West Pillar Direct", location: "Eichorn Pinnacle "},
+{ name: "Heart of Stone", location: " Fairview Dome "},
+{ name: "The Dike Route", location: "Pywiack Dome "},
+{ name: "Panic Pillar", location: " Cathedral Peak "},
+{ name: "Phobos", location: "Phobos/Deimos Cliff "},
+{ name: "The Yawn", location: " Medlicott Dome "},
+{ name: "Electric Africa", location: "Pywiack Dome "},
+{ name: "Magical Mystery Tour", location: " Fairview Dome "},
+{ name: "Shipoopi!", location: " Medlicott Dome "},
+{ name: "What Would Jeff Do", location: " Fairview Dome "},
+{ name: "Goldfinger", location: "Phobos/Deimos Cliff "},
+{ name: "40 Knobs to Freedom", location: " DAFF Dome "},
+{ name: "Do or Fly", location: "Puppy Dome "},
+{ name: "Creature from the Black Lagoon", location: " Olmsted Area "},
+{ name: "Black Angel", location: "Stately Pleasure Dome "},
+{ name: "Sorcerer's Apprentice", location: " Fairview Dome "},
+{ name: "Mithrandir", location: " Fairview Dome "},
+{ name: "Roseanne", location: " Fairview Dome "},
+{ name: "Horseshoes and Handgrenades", location: "Puppy Dome "},
+{ name: "Tideline", location: " Olmsted Area "},
+{ name: "Lord Caffeine", location: " Olmsted Area "},
+{ name: "Quiet Desperation", location: "Stately Pleasure Dome "},
+{ name: "Grenade Launcher", location: "Puppy Dome "},
+{ name: "Orange Plasma", location: " Cottage Domes "},
+{ name: "Ciebola", location: " Medlicott Dome "},
+{ name: "Mystery Route (Konvicts do Koalas)", location: " Cottage Domes "},
+{ name: "Sunshine", location: "Drug Dome "},
+{ name: "Wailing Wall", location: " Medlicott Dome "},
+{ name: "Scorpion", location: " Medlicott Dome "},
+{ name: "Titty Twister", location: " Medlicott Dome "},
+{ name: "Kill Bill", location: " Medlicott Dome "},
+{ name: "Positivity", location: "Micro Dome "},
+{ name: "Arch Rival", location: "Stately Pleasure Dome "},
+{ name: "Plastic Exploding Inevitable", location: " Fairview Dome "},
+{ name: "Saving Grace", location: " Medlicott Dome "},
+{ name: "Handbook", location: " Whizz Domes "},
+{ name: "Blackout (direct start)", location: " Whizz Domes "},
+{ name: "Shadow Warriors", location: " Whizz Domes "},
+{ name: "By Hook or By Crook", location: "Harlequin Dome "},
+{ name: "Damsel Fly", location: " Medlicott Dome "},
+{ name: "Ursula", location: "Dozier Dome "},
+{ name: "Loco Yokel", location: " Medlicott Dome "},
+{ name: "Arms Race", location: " Mariuolumne Dome "},
+{ name: "Easy Wind", location: " Mariuolumne Dome "},
+{ name: "Shiner", location: " Medlicott Dome "},
+{ name: "Shadow of Doubt", location: "Hammer Dome "}
+
+        // Add routes for Tuolumne here...
+    ];
+
+    var options = document.querySelectorAll('.option');
+    var resultText = document.getElementById('result');
+    var streakText = document.getElementById('streak');
+    var streakCount = 0;
+    var includedLocations = []; // Stores included locations
+
+    function toggleLocation(location) {
+        var index = includedLocations.indexOf(location);
+        if (index === -1) {
+            includedLocations.push(location);
+        } else {
+            includedLocations.splice(index, 1);
+        }
+        streakCount = 0; // Reset streak count when locations change
+        displayQuestion();
+        updateActiveButtons();
+        streakText.innerText = 'Streak: ' + streakCount; // Update streak count display
+    }
+
+    function getRandomRoute() {
+        var allRoutes = [];
+        includedLocations.forEach(function(location) {
+            allRoutes = allRoutes.concat(window[location + 'Regions']);
+        });
+        return allRoutes[Math.floor(Math.random() * allRoutes.length)];
+    }
+
+    function displayQuestion() {
+        var selectedRoute = getRandomRoute();
+        document.getElementById("climb-name").textContent = selectedRoute.name;
+
+        var correctLocation = selectedRoute.location;
+
+        // Get all unique locations from available routes
+        var uniqueLocations = [];
+        includedLocations.forEach(function(location) {
+            window[location + 'Regions'].forEach(function(route) {
+                if (!uniqueLocations.includes(route.location)) {
+                    uniqueLocations.push(route.location);
+                }
+            });
+        });
+
+        // Shuffle unique locations array
+        shuffleArray(uniqueLocations);
+
+        // Ensure correct location is included and shuffle again
+        var shuffledOptions = [correctLocation];
+        shuffleArray(shuffledOptions);
+
+        // Choose three additional unique locations for options
+        for (var i = 0; i < 3; i++) {
+            var optionLocation = uniqueLocations[i];
+            if (optionLocation !== correctLocation) {
+                shuffledOptions.push(optionLocation);
+            }
+        }
+
+        // Shuffle options again
+        shuffleArray(shuffledOptions);
+
+        // Set options in DOM
+        options.forEach(function(option, index) {
+            option.textContent = shuffledOptions[index];
+            option.setAttribute('data-correct', option.textContent === correctLocation ? 'true' : 'false');
+        });
+    }
+
+    // Fisher-Yates shuffle algorithm
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    function checkAnswer(clickedOption) {
+        if (clickedOption.getAttribute('data-correct') === 'true') {
+            resultText.innerText = 'Correct! ' + clickedOption.textContent + ' is the correct location';
+            streakCount++;
+        } else {
+            resultText.innerText = 'Incorrect. The correct location is ' + document.querySelector('.option[data-correct="true"]').textContent;
+            streakCount = 0;
+        }
+        streakText.innerText = 'Streak: ' + streakCount;
+
+        setTimeout(function() {
+            resultText.innerText = '';
+            displayQuestion();
+        }, 1500);
+    }
+
+    function updateActiveButtons() {
+        document.querySelectorAll('button').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        includedLocations.forEach(function(location) {
+            document.getElementById(location + 'Btn').classList.add('active');
+        });
+    }
+
+    options.forEach(function(option) {
+        option.addEventListener('click', function() {
+            checkAnswer(this);
+        });
+    });
+
+    document.getElementById('yosemiteBtn').addEventListener('click', function() {
+        toggleLocation('yosemite');
+    });
+
+    document.getElementById('tahoeBtn').addEventListener('click', function() {
+        toggleLocation('tahoe');
+    });
+
+    document.getElementById('sierrasBtn').addEventListener('click', function() {
+        toggleLocation('sierras');
+    });
+
+    document.getElementById('jtreeBtn').addEventListener('click', function() {
+        toggleLocation('jtree');
+    });
+
+    document.getElementById('sfbayBtn').addEventListener('click', function() {
+        toggleLocation('sfbay');
+    });
+
+    document.getElementById('eastsideBtn').addEventListener('click', function() {
+        toggleLocation('eastside');
+    });
+
+    document.getElementById('sonoraBtn').addEventListener('click', function() {
+        toggleLocation('sonora');
+    });
+
+    document.getElementById('tuolumneBtn').addEventListener('click', function() {
+        toggleLocation('tuolumne');
+    });
+
+    displayQuestion();
+</script>
+
+</body>
+</html>
