@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Choss Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+        }
+        #quiz-container {
+             max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative; /* Added position relative */
+            min-height: 50vh; /* Ensure quiz container fills the viewport height */
+        }
+        .options {
+            margin-top: 20px;
+        }
+        .option {
+            display: block;
+            margin: 5px auto;
+            padding: 10px 20px;
+            background-color: #444;
+            border: 1px solid #888;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: #555;
+        }
+        .active {
+            background-color: #159;
+            color: white; /* Change color of active regions to blue */
+        }
+        #back-btn {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        #back-btn:hover {
+            background-color: #555;
+        }
+        #footer {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <h1>Can you name the FA?</h1>
+    <p id="initial-message">Select one or more areas to begin. Good luck!</p>
+    <div>
+        <button id="yosemiteBtn">Yosemite</button>
+        <button id="tuolumneBtn">Tuolumne</button>
+        <button id="tahoeBtn">Tahoe</button>
+        <button id="sierrasBtn">High Sierras</button>
+        <button id="jtreeBtn">J-Tree</button>
+        <button id="sfbayBtn">SF Bay</button>
+        <button id="eastsideBtn">Eastside</button>
+        <button id="sonoraBtn">Sonora</button>
+        <p id="top-score">Top Score: 0</p>
+        <p id="streak">Streak: 0</p>
+    </div>
+    <h2 id="climb-name"></h2>
+    <div class="options">
+        <div class="option"></div>
+        <div class="option"></div>
+        <div class="option"></div>
+        <div class="option"></div>
+    </div>
+    <p id="result"></p>
+</div>
+<div id="footer">
+    <a href="index.html" id="back-btn">Back to Homepage</a>
+</div>
+
+<script>
+    var yosemiteEasyRoutes = [
+{ name: "The Nose - El Capitan ", location: "FA: Warren Harding, Wayne Merry, George Whitmore, 1958 FFA: Lynn Hill, 1993 "},
+{ name: "Freerider - El Capitan ", location: "Thomas and Alexander Huber, 1998 "},
+{ name: "Snake Dike - Half Dome ", location: "Eric Beck, Jim Bridwell, & Chris Fredericks - July, 1965 "},
+{ name: "Royal Arches -  Royal Arches ", location: "Ken Adam, Morgan Harris, W. Kenneth Davis 10/1936 "},
+{ name: "Salathe Wall - El Capitan ", location: "Royal Robbins, Tom Frost, Chuck Pratt 1961 FFA: Todd Skinner, Paul Piana, 1988 "},
+{ name: "Astroman - Washington Column ", location: "Warren Harding, Glen Denny & Chuck Pratt, July 1959, FFA John Bachar, John Long & Ron Kauk, May 1975 "},
+{ name: "Freeblast - El Capitan ", location: "Jim Bridwell, John Long, Kevin Worrall, Mike Graham, John Bachar, Ron Kauk, 1975 "},
+{ name: "Golden Corners (Blue Collar Free) - Ribbon Falls Area ", location: "FFA: Mark Westerberg, Travis Heidepriem, Robert Kennedy - 11/12/2023 // FA: Kevin DeWeese, Josh Mucci, Steve Bosque - 5/2014 "},
+{ name: "The Nutcracker Suite (aka Nutcracker) - El Cap Picnic Area (Eagle Creek)", location: "Royal and Liz Robbins, 1967 "},
+{ name: "Lurking Fear - El Capitan ", location: "Dave Bircheff, Phil Bircheff, and Jim Pettigrew, 1976 FFA: Tommy Caldwell, Beth Rodden, 6/2000 "},
+{ name: "East Buttress - El Capitan ", location: "Allen Steck, Wili Siri, Bill Long & Willi Unsoeld - June, 1953 "},
+{ name: "Golden Gate - El Capitan ", location: "Alexander Huber, Thomas Huber - October 2000 "},
+{ name: "Sons of Yesterday -  Royal Arches ", location: "John Tuttle, Drew Davol, Vince Depasque 1986 "},
+{ name: "Serenity Crack -  Royal Arches ", location: "Glen Denny & Les Wilson 10/1961. FFA: Tom Higgins, Chris Jones 1967 "},
+{ name: "The North Face - The Rostrum", location: "Denny & Harding - 1962FFA: Kauk & Yablonski - 1977Carrigan got the final pitch Yaniro did the Alien finish "},
+{ name: "Central Pillar of Frenzy - Cathedral Area ", location: "Jim Bridwell, Roger Breedlove, Dale Bard, 1973 "},
+{ name: "Separate Reality - Wildcat Falls & Above the Cookie ", location: "Ron Kauk, et al, 1978 "},
+{ name: "Regular Northwest Face - Half Dome ", location: "Royal Robbins, Mike Sherrick and Jerry Gallwas, June 1957 "},
+{ name: "Steck-Salathe - Sentinel Rock ", location: "Allen Steck & John Salathe - 1950 "},
+{ name: "South Face - Washington Column ", location: "FA: Layton Kor, Chris Fredericks, 6/1964 FCA: Bruce Carson, 6/1973 FFA: Matthew Wilder, 10/2002 "}
+    ];
+
+    var yosemiteMediumRoutes = [
+{ name: "East Buttress - Cathedral Area ", location: "FA: 1954-W. Harding, J. Davis, B. Swift FFA: 1965-F. Sacherer, E. Leeper "},
+{ name: "The Grack - Center - Glacier Point Apron ", location: "Bill Sorenson, Jack Delk 1967 "},
+{ name: "Magic Mushroom - El Capitan ", location: "Hugh Burton & Steve Sutton 1972; FFA Tommy Caldwell & Justen Sjong May 2012 "},
+{ name: "Bishops Terrace - Church Bowl ", location: "FA: Russ Warne, Dave McFadden, and Steve Roper, December, 1959 FFA: Chuck Pratt, Herb Swedlund, 1960. "},
+{ name: "West Face - Leaning Tower ", location: "FA: Warren Harding, Al MacDonald, Glen Denny (help from Les Wilson, Chris Westphal, George Whitmore) - 1961; FFA: Leo Houlding & Jim Pickles - 2001 "},
+{ name: "The Shield - El Capitan ", location: "Gary Bocarde, Charlie Porter 1972 FCA: Charlie Fowler, Xavier Bongard, 1993 "},
+{ name: "Reed's Pinnacle-Direct Route - Reed's Pinnacle ", location: "Last pitch:Frank Sacherer, Mark Powell, Wally Reed, Gary Colliver, Andy Lichtman, 5/64. 2nd pitch: Frank Sacherer, Wally Reed, Chris Fredericks, 6/64. "},
+{ name: "Regular Route - Cathedral Area ", location: "Jules Eichorn, Bestor Robinson, Dick Leonard, 1934 Chuck Wilts, Spencer Austin, 1944 "},
+{ name: "Tenaya's Tears -  Royal Arches ", location: "Skyler and Clint Cummins and John Tuttle, 2018 "},
+{ name: "Commitment - Yosemite Falls Area ", location: "Jim Bridwell, Dave and Phil Bircheff "},
+{ name: "Butterballs - The Cookie Cliff ", location: "Henry Barber, May 1973 "},
+{ name: "Lost Arrow Spire Direct - Yosemite Falls Area ", location: "Pat Callis and Warren Harding, June 21,1968 "},
+{ name: "Outer Limits - The Cookie Cliff ", location: "Jim Bridwell and Jim Orey, 1971. "},
+{ name: "West Face - El Capitan ", location: "FA 1967 TM Herbert & Royal Robbins FFA 1979 Ray Jardine and Bill Price "},
+{ name: "Northeast Buttress - Cathedral Area ", location: "FA: Long, D'Arcy, & TarverFFA: Sacherer & Dozier - 1964 "},
+{ name: "Voyager - Fifi Buttress ", location: "Dan McDevitt & Ryan Kelly. October 2013. "},
+{ name: "Freestone (Geek Towers, Left) - Yosemite Falls Area ", location: "Bridwell, Kauk, Bard. 10/74 "},
+{ name: "Heart Route (Free) - El Capitan ", location: "Mason Earle, Brad Gobright june 2015 "},
+{ name: "Braille Book - Cathedral Area ", location: "Jim Bridwell, Chris Fredericks, Brian Berry and Joe Faint, June 1966 "},
+{ name: "Gaia - Cathedral Area ", location: "Brandon Adams, Lance Colley 2023 "}
+    ];
+
+    var yosemiteHardRoutes = [
+{ name: "The Prow - Washington Column ", location: "Royal Robbins and Glen Denny, June 1969 "},
+{ name: "The Phoenix - Cascade Area ", location: "Ray Jardine, May 1977 "},
+{ name: "Sacherer Cracker - El Capitan ", location: "FFA: Frank Sacherer and Mike Sherrick, 1964 "},
+{ name: "Triple Direct - El Capitan ", location: "FA: Jim Bridwell, Kim Schmitz, 1969 "},
+{ name: "Center of the Universe - Fifi Buttress ", location: "Dan McDevitt, Casey Jones "},
+{ name: "Muir Wall - El Capitan ", location: "FA Yvon Chouinard, TM Herbert, 1965 / FCA Steve Grossman, 1990 "},
+{ name: "Mescalito - El Capitan ", location: "Steve Sutton, Charlie Porter, Hugh Burton & Chris Nelson, 1973. FCA: Dave Dyess, A.C. Robertson, 1997 "},
+{ name: "Wings of Steel - El Capitan ", location: "Richard Jensen & Mark Smith (1982) "},
+{ name: "Crest Jewel (and Crest Jewel Direct) - North Dome ", location: "Dingle & Lucero - 1981Direct was put up by Dingle & Swann in '02 "},
+{ name: "Moby Dick Center - El Capitan ", location: "FA: Herb Swedlund, Penny Carr, 5/63 FFA: Frank Sacherer, Steve Roper, 5/63 "},
+{ name: "Mr. Natural - Glacier Point Apron ", location: "Chris Cantwell & Bruce Morris, September 1979 "},
+{ name: "Lost Arrow Tip - Yosemite Falls Area ", location: "Fritz Lippmann, Jack Arnold, Anton 'Ax' Nelson and Robin Hansen 9/1946 "},
+{ name: "Jericho Wall Free - Glacier Point Apron ", location: "FFA: Mark Westerberg and Shaun Reed - October 2018 // FA: Josh Mucci and Steve Bosque - October 2013 "},
+{ name: "Father Time - Cathedral Area ", location: "Mikey Schaefer et al "},
+{ name: "My Favorite Things - Clouds Rest ", location: "Hannah North, Tom Harper, Tom Malzbender "},
+{ name: "*CLOSED FOR SAFETY* Super Natural -  Royal Arches ", location: "Jake Squier and Camden Clements, Aug 2023 "},
+{ name: "Meltdown - Cascade Area ", location: "Beth Rodden, 2008 "},
+{ name: "Wayward Son - Lost Brother ", location: "Brandon Adams, August 2019 "},
+{ name: "The Last Crusade - Cathedral Area ", location: "Travis Heidepriem, Mark Westerberg, Rob Kennedy "},
+{ name: "Jamcrack - Yosemite Falls Area ", location: "Loyd Price, Kim Schmitz. FFA: Kim Schmitz, Jim Madsen. "},
+{ name: "Lost Arrow Chimney - Yosemite Falls Area ", location: "FA: John Salathe, Anton Nelson, 9/1947, FFA: Chuck Pratt, Frank Sacherer, 1964 , FreeSolo 1978 Greg Cameron "},
+{ name: "South Face Route - North Dome ", location: "FA: Mark Powell, Wally Reed, 8/1957 FFA: Mort Hempel, Irene Ortenberger, Steve Roper, 1960 "},
+{ name: "Lunatic Fringe - Reed's Pinnacle ", location: "Barry Bates and Bev Johnson 1971 "},
+{ name: "Book of Hate - Elephant's Graveyard ", location: "Randy Leavitt 1999 "},
+{ name: "Mr. Midwest - El Capitan ", location: "FA Bill Russell, Doug McDonald, August 1985 FFA Eric Bissell, Cameron King, May 2016 "},
+{ name: "The Moratorium - El Cap Picnic Area (Eagle Creek)", location: "Livesey & Jones - 1975 "},
+{ name: "Cookie Monster - The Cookie Cliff ", location: "Bill Price 1979 FFA (1st pitch) Kurt Smith, Scott Cosgrove 1987 (on gear) "},
+{ name: "El Nino - El Capitan ", location: "Huber Bros 1998, Sonnie Trotter (Pineapple Express) 2018 "},
+{ name: "Ahab - El Capitan ", location: "Frank Sacherer, Jim Bridwell, 1964 "},
+{ name: "El Corazon - El Capitan ", location: "Alex Huber, Max Reichel 2001 "},
+{ name: "Autobahn - Half Dome ", location: "Charles Cole, John Middendorf, and Rusty Reno, 1985 "},
+{ name: "Romulan Warbird - Fifi Buttress ", location: "FA Dan McDevitt 1999 FFA Lucho Rivera 2012 "},
+{ name: "Tales of Power - Wildcat Falls & Above the Cookie ", location: "Ron Kauk, et al, 9/1977 "},
+{ name: "Hall of Mirrors - Glacier Point Apron ", location: "Chris Cantwell and Scott Burke "},
+{ name: "Direct North Buttress (DNB) - Cathedral Area ", location: "FA: Yvon Chouinard & Steve Roper, 6/62 FFA: Frank Sacherer & Eric Beck, 1965 "},
+{ name: "Atlantic Ocean Wall - El Capitan ", location: "John Middendorf, John Barbella - September 1985 "},
+{ name: "Twilight Zone - The Cookie Cliff ", location: "Chuck Pratt and Chris Fredericks, September 1965 "},
+{ name: "Cosmic Debris - The Chapel Wall", location: "Bill Price, 1980 "},
+{ name: "Absolutely Free, Center - Camp 4 Area ", location: "Sheldon Smith, Mark Klemens and Rick Sylvester, August 1970 "},
+{ name: "New Dawn - El Capitan ", location: "First Free Ascent Tommy Caldwell, Alex Honnold and Kevin Jorgeson. Nov. 1 2019 "}
+    ];
+
+    var tuolumneEasyRoutes = [
+{ name: "Matthes Crest Traverse - South to North - Matthes Crest ", location: "Chuck and Ellen Wilts, June 1947 "},
+{ name: "Regular Route -  Fairview Dome ", location: "Wally Reed, Chuck Pratt 8/58, FFA Steve Roper and Mark Powell 1962 "},
+{ name: "West Crack -  DAFF Dome ", location: "Frank Sacherer, Wally Reed 7/1963. "},
+{ name: "Southeast Buttress -  Cathedral Peak ", location: "Wilts and Spencer Austin, 1943 "},
+{ name: "Oz - Drug Dome ", location: "Dale Bard & Bob Locke - 1975 "},
+{ name: "Bachar-Yerian -  Medlicott Dome ", location: "John Bachar & Dave Yerian, 1981 "},
+{ name: "Hobbit Book -  Mariuolumne Dome ", location: "Charlie Raymond and Gordon Webster, 1965 "},
+{ name: "On the Lamb -  Lamb Dome ", location: "Brossman & Stephans - 1974 "},
+{ name: "South Crack - Stately Pleasure Dome ", location: "Gordon Webster, Frank de Saussure and TM Herbert, 1965 "},
+{ name: "Tuolumne Alpine Triple Crown - Mt. Conness ", location: "IDK "},
+{ name: "Lucky Streaks -  Fairview Dome ", location: "Kamps & Higgins 7/1967 "},
+{ name: "Crescent Arch -  DAFF Dome ", location: "Layton Kor, Fred Beckey, 6/65. FFA: Bob Kamps, TM Herbert, 1960s. "},
+{ name: "Peace -  Medlicott Dome ", location: "Ron Kauk "},
+{ name: "South West Face (Harding) Route - Mt. Conness ", location: "Warren Harding, et al "},
+{ name: "Potter in Wonderland - Stately Pleasure Dome ", location: "Potter Wonderland 8/2021 "},
+{ name: "Crying Time Again -  Lembert Dome ", location: "Tim Loose, Bill Taylor and Bruce Morris 1975 "},
+{ name: "Blues Riff - Phobos/Deimos Cliff ", location: "Dale Bard, Bob Locke, Claude Fiddler & Allen Bard, 1976 "},
+{ name: "Far West Country - Stately Pleasure Dome ", location: "Bob Summers, John Gibbins and Sue German (1969) "},
+{ name: "Valinor -  Mariuolumne Dome ", location: "Brandon Adams, Chris Gay, Eric Farrugia, 2019 "},
+{ name: "Bombs over Tokyo (1st pitch) -  DAFF Dome ", location: "Vern Clevenger, Claude Fiddler "}
+    ];
+
+    var tuolumneMediumRoutes = [
+{ name: "You Asked For It -  Medlicott Dome ", location: "John Bachar and Ron Peers 7/81 "},
+{ name: "Blown Away -  DAFF Dome ", location: "Greg Barnes, Karin Wuhrmann, & Rachel Nelson - 2002 "},
+{ name: "The Gram Traverse - Drug Dome ", location: "Bard & Locke - 1976 "},
+{ name: "Direct Northwest Face -  Lembert Dome ", location: "FFA: Mark and Beverly Powell, 1962 "},
+{ name: "West Pillar Direct - Eichorn Pinnacle ", location: "Alan Bartlett "},
+{ name: "Heart of Stone -  Fairview Dome ", location: "Vern Clevenger, Claude Fiddler, Dave Lomba, August 1980 "},
+{ name: "The Dike Route - Pywiack Dome ", location: "Gerughty, Evje, & Meeks - 1966 "},
+{ name: "Panic Pillar -  Cathedral Peak ", location: "Glen Dawson and Jack Riegelhuth, 1934 (TR); Tom Higgins and Bud Couch (first lead) "},
+{ name: "Phobos - Phobos/Deimos Cliff ", location: "Tom Higgins & Jack Miller, 1970 "},
+{ name: "The Yawn -  Medlicott Dome ", location: "TM Herbert and Gordon Webster, June 1965, FFA: Phil Bircheff & Jan Ebeltoft, July 1969 "},
+{ name: "Circus Circus -  Medlicott Dome ", location: "Steve “Shipoopi” Schneider "},
+{ name: "Tenaya Peak, North Face Direct - Tenaya Peak ", location: "26166"},
+{ name: "Kilogram - Drug Dome ", location: "Connor Herson "},
+{ name: "Electric Africa - Pywiack Dome ", location: "Kurt Smith (1986) "},
+{ name: "Magical Mystery Tour -  Fairview Dome ", location: "Tobin Sorensen, Mike Graham 7/73 "},
+{ name: "Shipoopi! -  Medlicott Dome ", location: "Steve Schnieder "},
+{ name: "What Would Jeff Do -  Fairview Dome ", location: "Jeff Schoen and friends ca. 2009 "},
+{ name: "Unreliable Narrator - Pywiack Dome ", location: "an ascent has been made, Aug 2019, SRuff & DCuster "},
+{ name: "Goldfinger - Phobos/Deimos Cliff ", location: "John Bachar, July 1981 "},
+{ name: "Golden Rose -  Medlicott Dome ", location: "Ron Kauk "}
+    ];
+
+    var tuolumneHardRoutes = [
+{ name: "40 Knobs to Freedom -  DAFF Dome ", location: "7/2020 KC Ellingford, Nick Malik "},
+{ name: "Top Gun - Stately Pleasure Dome ", location: "FFA Eric Bissell, July 4th 2016 "},
+{ name: "Do or Fly - Puppy Dome ", location: "Chris Falkenstein, Bob Finn "},
+{ name: "Creature from the Black Lagoon -  Olmsted Area ", location: "Scott Cole, Bruce Morris "},
+{ name: "Smitten By Kittens - Wildcat Point ", location: "Brandon Adams, Patrick Rizzo "},
+{ name: "Broken Arrow -  Olmsted Area ", location: "Ron Kauk "},
+{ name: "Black Angel - Stately Pleasure Dome ", location: "Chris Falkenstein and Don Reid, July 1979 "},
+{ name: "Sorcerer's Apprentice -  Fairview Dome ", location: "Vern Clevenger, Tom Carter, Alan Bard, and Bob Harrington, July 1978 "},
+{ name: "Roseanne -  Fairview Dome ", location: "Alan Bartlett and James Wilson, early 80's "},
+{ name: "Horseshoes and Handgrenades - Puppy Dome ", location: "Dale Bard, 1970's "},
+{ name: "Nightingale Arete - Vogelsang Peak ", location: "Gary Colliver and Alen Bartlett, July 1981 "},
+{ name: "Tideline -  Olmsted Area ", location: "Dave Yerian, Tom Herbert, Merry McGrath "},
+{ name: "Lord Caffeine -  Olmsted Area ", location: "Urmas and Becky Franosch, Bruce Morris (1986) "},
+{ name: "Quiet Desperation - Stately Pleasure Dome ", location: "Jim Pettigrew and Dave Bircheff, August 1972 "},
+{ name: "Bombs Over Tokyo (Full) -  DAFF Dome ", location: "Vern Clevenger, Claude Fiddler 1981. FFA: John Bachar 1983 "},
+{ name: "Grenade Launcher - Puppy Dome ", location: "John Bachar, 1980's "},
+{ name: "Clementine - Wildcat Point ", location: "Brandon Adams, Rebecca Church, Sydney Taylor "},
+{ name: "Wildcat - Wildcat Point ", location: "Deb Wolfe, Jeff Schoen, 2003 "},
+{ name: "Orange Plasma -  Cottage Domes ", location: "Jim Schwarz, Paul Granthem "},
+{ name: "Lyme Line -  Fairview Dome ", location: "FFA Bob Jensen/Corey Flynn ( FA Sean Kriletich/Bob J. @12a A0) "},
+{ name: "Ciebola -  Medlicott Dome ", location: "Vern Clevenger, Bob Harrington, Alan Barteltt, June 1977 "},
+{ name: "Super Sonic -  Whizz Domes ", location: "Ron Kauk (1989) "},
+{ name: "Death Crack - Stately Pleasure Dome ", location: "Vern Clevenger, August 1975 "},
+{ name: "Acapulco Gold - Drug Dome ", location: "Sean Leary, Dimitri Barton, Ivo Ninov "},
+{ name: "Mystery Route (Konvicts do Koalas) -  Cottage Domes ", location: "John Tuttle and John from Australia "},
+{ name: "Sunshine - Drug Dome ", location: "Dennis Oakeshott, Bob Harrington, July 1976 "},
+{ name: "The Meltdown - Pywiack Dome ", location: "Kurt Smith, '86 "},
+{ name: "Crotch Rocket Joy Ride -  DAFF Dome ", location: "Noah Dailey and Gavin Bailey. (2022) "},
+{ name: "European Vacation - Pywiack Dome ", location: "Ron Kauk August 1988 "},
+{ name: "Wailing Wall -  Medlicott Dome ", location: "FA: Dave Calfee & TM Herbert - June, 1967FFA: Dale Bard, Jim Bridwell, & Rick Accomazzo - 1975 "},
+{ name: "Cowabunga -  DAFF Dome ", location: "Steve Schneider, Scott Cosgrove June 1984 "},
+{ name: "It takes a Village -  Grand Canyon of the Tuolumne ", location: "FA: Lucas Barth, Kyle Reynolds, Jon Griffin, Shayd Forrest Otis, and Gabe Mann FFA: Lucas Barth and Shelton Hatfield 2018 "},
+{ name: "Sacred Fire -  Whizz Domes ", location: "Ron Kauk (2000) "},
+{ name: "Scorpion -  Medlicott Dome ", location: "Dale Bard & Bob Locke - July, 1976 "},
+{ name: "Titty Twister -  Medlicott Dome ", location: "Brandon Adams 2018 "},
+{ name: "Pretty in Pinkpoint, P2 -  Medlicott Dome ", location: "Steve Schnieder "},
+{ name: "Kill Bill -  Medlicott Dome ", location: "Jonathan duSaint, Greg Barnes, 8/06. "},
+{ name: "Positivity - Micro Dome ", location: "(TR) Ron Kauk; First Lead: Tom Herbert, July 1990 "},
+{ name: "Love Supreme -  The Arena ", location: "Hidetaka Suzuki, 1980 "},
+{ name: "Retrospective -  Fairview Dome ", location: "Mikey Schaefer and Nils Davis '05 "},
+{ name: "Arch Rival - Stately Pleasure Dome ", location: "Vern Clevenger & Kevin Leary. July 1979. "},
+{ name: "Splitter boulder hand crack -  Grand Canyon of the Tuolumne ", location: "Sevve Stember, Alan Holzkopf, Scott Rysdahl, Maura LaRiviere - 2010 "},
+{ name: "The Fortress -  Grand Canyon of the Tuolumne ", location: "Sevve Stember, Alan Holzkopf, Scott Rysdahl, Maura LaRiviere 2010 "},
+{ name: "Just the Tips -  Grand Canyon of the Tuolumne ", location: "Lucas Barth and Shelton Hatfield "},
+{ name: "Penguin Cafe -  Murphy Creek", location: "Scott Fry, Bird Lew, 1985 "},
+{ name: "Daddy's Little Girl - Stately Pleasure Dome ", location: "Rob Settlemeyer and Dave Caunt "},
+{ name: "Wisdom Extension -  Whizz Domes ", location: "Tom Herbert August 2022 "},
+{ name: "Plastic Exploding Inevitable -  Fairview Dome ", location: "Jim Pettigrew, Dave and Phil Bircheff 1974 "},
+{ name: "Deflector -  Medlicott Dome ", location: "Greg Barnes, Brian Bennett, Elmar Stefke, Paul Rasmussen, George Ridgley, 2012. "},
+{ name: "Saving Grace -  Medlicott Dome ", location: "Brandon Adams 2018 "}
+    ];
+
+    var tahoeEasyRoutes = [
+{ name: "Corrugation Corner -  Lover's Leap ", location: "K. Edsburg et al., 1960's "},
+{ name: "Bear's Reach -  Lover's Leap ", location: "Berry and Linnett, 1956 "},
+{ name: "Traveler Buttress -  Lover's Leap ", location: "Dick long, Al Steck, 1965 "},
+{ name: "The Line -  Lover's Leap ", location: "Herbert, Tompkins "},
+{ name: "One Hand Clapping -  Black Wall ", location: "Eric Beck and Peter Hann, 1972 "},
+{ name: "Hospital Corner -  Lover's Leap ", location: "Harrion and Smith, 1977 "},
+{ name: "Silk Road (High Times) -  Calaveras Dome ", location: "Jay Smith and friends "},
+{ name: "Grand Illusion -  Sugarloaf Area ", location: "Unknown, FFA: Tony Yaniro, 1979 "},
+{ name: "Wall of the Worlds -  Calaveras Dome ", location: "Jay K Smith, Jeff Altenburg, 1978. "},
+{ name: "Black September -  Black Wall ", location: "Eric Beck, et al, 1973 "},
+{ name: "Surrealistic Pillar Direct -  Lover's Leap ", location: "Lowe and Vives, 1969 "},
+{ name: "Candyland -  Phantom Spires ", location: "Eric Barrett, John Bowlin, R. Orevitz, 1977. "},
+{ name: "Step Into The Light -  The Emeralds ", location: "Brad Johnson and John Robinson "},
+{ name: "Jellyroll Arch -  Grouse Slab ", location: "John Hoffman and Skip Casey, 1972 "},
+{ name: "Psychedelic Tree -  Lover's Leap ", location: "Bruce Cooke & TM Herbert, 1968 "},
+{ name: "Eeyore's Enigma -  Lover's Leap ", location: "Warren Harding, TM Herbert & Galen Rowell, 1969 FFA: Jim Orey et al., 1973 "},
+{ name: "Perfect Arch -  Phantom Spires ", location: "Suchoski, Young (2017) "},
+{ name: "Space Walk - Eagle Lake Cliff ", location: "Kevin Nelson, Bill Todd, 1973. FFA: Rick Cashner, Rick Sumner, 1979. "},
+{ name: "The Perfect Lie Back -  The Fortress ", location: "Bill Griffin, early 1980's "},
+{ name: "Bat Karma -  Cave Valley (aka Auburn Quarry) ", location: "Jim Thornburg "}
+    ];
+
+    var tahoeMediumRoutes = [
+{ name: "Fear of Flying -  Phantom Spires ", location: "Joel Moorem, Dale Zgraggen, 1975. "},
+{ name: "Bottomless Topless - Snowshed Wall ", location: "Eric Beck "},
+{ name: "Cookie Mix - South Star Wall ", location: "Scott Frye, 1996 "},
+{ name: "One Of These Days -  Cloudburst Canyon ", location: "Karl McConachie "},
+{ name: "Cannibals - Snowshed Wall ", location: "Scott Frye "},
+{ name: "Monkey Paws - Snowshed Wall ", location: "Max Jones and Mark Hudon, 1979 "},
+{ name: "Super Size Me -  The Emeralds ", location: "John Robinson, Brad Johnson "},
+{ name: "Tombstone Terror -  Lover's Leap ", location: "Anderson, Miller, Smith, and Sumner 1976 "},
+{ name: "Touch and Go -  Black Wall ", location: "Kim Schmitz and Norm Simmons, 1971 "},
+{ name: "Scimitar -  Lover's Leap ", location: "FFA: Jim Orey, F. Van Overbeck 1972 "},
+{ name: "Charlee And The Stick Factory -  The Emeralds ", location: "Brad Johnson, John Robinson "},
+{ name: "Steel Monkey -  The Emeralds ", location: "mike carville "},
+{ name: "Boot Hill -  Lover's Leap ", location: "Paul Crawford, Paul Obanheim and Jay Smith, 1984 "},
+{ name: "Warp Factor - South Star Wall ", location: "Scott Frye, 1988 "},
+{ name: "Farewell To Arms - Snowshed Wall ", location: "Karl Hammer and John Hoffman, 1976 "},
+{ name: "Daddy's Little Secret (A.K.A. Twenty Feet From Stardom) - South Star Wall ", location: "44531"},
+{ name: "Space Truckin' - Eagle Lake Cliff ", location: "Rick Cashner, Angie Morales "},
+{ name: "Mortal Kombat -  The Pie Shop ", location: "Charlie Barrett "},
+{ name: "Tree Beard - Cascade Cliff ", location: "Nils Davis and Steve Newell, circa 2000 "},
+{ name: "Panic In Detroit - Snowshed Wall ", location: "Max Jones and Mark Hudon, 1979 "}
+    ];
+
+    var tahoeHardRoutes = [
+{ name: "All American Finger Crack - Emerald Point ", location: "R. Summer, B. Todd - 1975 "},
+{ name: "Weekend At Bernie's - Cascade Cliff ", location: "Ethan Pringle, Joe Kinder, 2013 "},
+{ name: "Fantasia -  Lover's Leap ", location: "Royal Robbins, Ken Wilson 1973 "},
+{ name: "Peter Principle - Snowshed Wall ", location: "Karl Hammer, 1975 "},
+{ name: "Metallarete -  Echo Lakes ", location: "Dan Osman "},
+{ name: "J'aime Bonpland - Calawee Cliffs ", location: "William Fleming summer 2015 "},
+{ name: "Pump Lust - Snowshed Wall ", location: "Harrison Decker 1987 "},
+{ name: "Taurus -  Sugarloaf Area ", location: "Mark Hudon and Max Jones, 1977 "},
+{ name: "Firecracker -  Black Wall ", location: "The Bird "},
+{ name: "5 Minutes Alone -  Cloudburst Canyon ", location: "Charlie Barrett "},
+{ name: "Radio Static -  The Emeralds ", location: "mike carville, july 89 "},
+{ name: "Duppy Conqueror -  The Emeralds ", location: "Mike Carville 1989 "},
+{ name: "Double Dragon -  The Pie Shop ", location: "Tom Herbert "},
+{ name: "El Colmillo -  The Emeralds ", location: "Carsten Thess "},
+{ name: "Vanishing Point -  Lover's Leap ", location: "Gene Drake, Jim Orey, 1972. FAA: B. Todd & Rick Sumner & John Taylor 1975 "},
+{ name: "The Wright Stuff -  Wrights Lake ", location: "Drew Smith, Moss Halladay "},
+{ name: "Release the Lions -  Cave Valley (aka Auburn Quarry) ", location: "mike carville / josh horniak "},
+{ name: "East face of the plectrum - Emerald Point ", location: "Charlie Barrett "},
+{ name: "Karl's Overhang -  School Rock ", location: "Karl Hammer "},
+{ name: "Star Wars Crack - South Star Wall ", location: "Hidetaka Suzuki "},
+{ name: "A Steep Climb Named Desire - South Star Wall ", location: "Scott Frye "},
+{ name: "Human Oddity -  Cave Valley (aka Auburn Quarry) ", location: "(TR) Eric Kohl, FL: Aaron Rough & Vince Kramer "},
+{ name: "Welcome To Thunderdome -  The Emeralds ", location: "Ky Bishop "},
+{ name: "Self Abuse -  Sugarloaf Area ", location: "Royal Robbins "},
+{ name: "I Be Jammin' -  The Fortress ", location: "Sigi Vogl and Bill Griffin, 1985 "},
+{ name: "Neutron -  Cloudburst Canyon ", location: "Bauer/Osman '88 "},
+{ name: "Short Subject -  School Rock ", location: "Mic Deiro "},
+{ name: "Made In Japan - Space Wall ", location: "Victor Marcus "},
+{ name: "Bronco - South Star Wall ", location: "Hidetaka Suzuki 1988 "},
+{ name: "East Corner -  Lover's Leap ", location: "TM Herber, Bob Kamps 1969 "},
+{ name: "Freak Show -  Lover's Leap ", location: "Jay Smith "},
+{ name: "Seams to Me - Eagle Lake Cliff ", location: "Dana Grossman, Rick VanHorn, 1980. "},
+{ name: "Babylon - Babylon Crag ", location: "Mark Hudon, 1978 "},
+{ name: "Baba Yaga - Willody boulders and offwidth ", location: "Willow Grey, September 25th 2023 "},
+{ name: "Toby Tops Out -  The Emeralds ", location: "Colby Wangler, Josh Horniak "},
+{ name: "Fear No Evil -  Lover's Leap ", location: "Norm Booth and Jay Smith, 1979. "},
+{ name: "Lesbian Love -  Phantom Spires ", location: "Price/Smith first 25', Aidan Maguire next 25', Crawford/Smith last 25' 2002 "},
+{ name: "Blue Sky Black Clouds - Cascade Cliff ", location: "Joe Kinder, 2014 "},
+{ name: "Living the Dream -  The Pie Shop ", location: "Mike Njoten "},
+{ name: "Delivering the Goods -  Mayhem Cove ", location: "Jason Halladay, Moss Halladay, Dave Hatchett, Dave Schewizo, Drew Smith "}
+    ];
+
+    var sierrasEasyRoutes = [
+{ name: "Positive Vibrations - Incredible Hulk ", location: "FA Harrington, Bartlett 8/81. FFA Bard, Lyde 8/86 "},
+{ name: "East Buttress - Mt. Whitney ", location: "Bob Brinton, Glen Dawson, Richard Jones, Howard Koster, Muir Dawson, September 1937 "},
+{ name: "Evolution Traverse - Mt. Darwin ", location: "Peter Croft "},
+{ name: "Red Dihedral (aka Yggdrasil) - Incredible Hulk ", location: "Bard, Farrell, Locke - June 1975 "},
+{ name: "East Face - Mt. Whitney ", location: "Underhill, Eichorn, Dawson, Clyde. 1931. "},
+{ name: "Hairline Free - Mt. Whitney ", location: "Connor Herson & Fan Yang "},
+{ name: "Mithril Dihedral - Mt. Russell ", location: "Alan Bartlett & Alan Roberts, July 1976 "},
+{ name: "Fishhook Arete - Mt. Russell ", location: "Gary Colliver & John Cleare, June 1974 "},
+{ name: "South Face - Charlotte Dome ", location: "Galen Rowell, Chris Jones, Fred Beckey - October 1970 "},
+{ name: "Sun Ribbon Arete - Temple Crag ", location: "Don Jensen & John Fischer - Sept 1969 "},
+{ name: "The Venturi Effect - Incredible Hulk ", location: "Croft, Nettle, Davis, 2004 "},
+{ name: "Thunderbolt to Sill Traverse - Thunderbolt Peak ", location: "John Ohrenschall & John Mathias - 1958 "},
+{ name: "North Arete - Bear Creek Spire ", location: "Galen Rowell, Jeanne Neale - August 1971 "},
+{ name: "Solar Flare - Incredible Hulk ", location: "Conrad Anker & Peter Croft 2007 "},
+{ name: "The Polish Route - Incredible Hulk ", location: "Rick Wheeler and Bob Harrington "},
+{ name: "Shield of Dreams - Trapezoid Peak ", location: "Big Hippy and Swami "},
+{ name: "Dark Star - Temple Crag ", location: "Don Jensen, John Fischer, Keith Brueckner, Doug Robinson, Gordon Wiltsie, Jay Jensen - 1971 to 1975 "},
+{ name: "Sunspot Dihedral - Incredible Hulk ", location: "Nettle, Hayden, 1999 "},
+{ name: "Southeast Face - Clyde Minaret ", location: "John Evans, Dick Long, Allen Steck, Chuck Wilts - June 22, 1963 "},
+{ name: "Swiss Arete - Mt. Sill ", location: "Dick Jones, Spencer Austin, Ruth Dyer, Ray Ingwersen, Joe Momyer - July 1938 "}
+    ];
+
+    var sierrasMediumRoutes = [
+{ name: "Bastille Buttress - Beckey Route - Lone Pine Peak ", location: "Fred Beckey, Joe Brown, & Chuck Haas, 1969 "},
+{ name: "Free Radical - Little Slide Spires ", location: "Brandon Adams, Roger Putnam 2023 "},
+{ name: "Harding Route - Keeler Needle ", location: "Warren Harding, Desert Frank, et al "},
+{ name: "Puff the Magic Dragon - Trapezoid Peak ", location: "Chase Leary, Andy Puhvel "},
+{ name: "Green Thunder - Incredible Hulk ", location: "Chase Leary, Andy Puhvel, Peter Croft "},
+{ name: "Hairline - Mt. Whitney ", location: "Bruce Bindner & Alex Schmauss 1987 "},
+{ name: "Michael Strassman Memorial Route - Lone Pine Peak ", location: "Scotty Nelson, Charles Ince and Nathan Ricklin "},
+{ name: "Up in Smoke - Incredible Hulk ", location: "Andy Puhvel, Chase Leary "},
+{ name: "Airstream - Incredible Hulk ", location: "Croft, Nettle, & Epperson, 2004 "},
+{ name: "Direct North Buttress - Merriam Peak ", location: "Vern Clevenger/Bob Harrington "},
+{ name: "Ikigai - Bubbs Creek Wall ", location: "Shaun Reed, Dave Meyer, Marec Serlin "},
+{ name: "Lenticular Gyrations - Incredible Hulk ", location: "Aaron Cassebeer, Jeff Gicklhorn, Patrick O'Donnell (9/5/2016) "},
+{ name: "Against the Grain - Charlotte Dome ", location: "First Ascent: 2020-2022 - Vitaliy Musiyenko//First Free Ascent: July 2022 - Vitaliy Musiyenko, Brian Prince "},
+{ name: "Tradewinds - Incredible Hulk ", location: "Nettle, Davis 2006 "},
+{ name: "The Emperor - Bubbs Creek Wall ", location: "Vitaliy Musiyenko and friends "},
+{ name: "Star Trekkin' - Mt. Russell ", location: "Alan Bartlett & Robb Dellinger, 1978 "},
+{ name: "Blowhard - Incredible Hulk ", location: "Peter Croft and Andrew Stevens July 2004 "},
+{ name: "The Flying Buttress - Merriam Peak ", location: "Peter Croft and Lisa Rands - 8/2011 "},
+{ name: "Sky Pilot - Mt. Goode ", location: "Croft, Lella 2014 "},
+{ name: "Western Front - Mt. Russell ", location: "Galen Rowell & Chris Jones (1971); FFA: Alan Bartlett & Kim Walker (1978) "}
+    ];
+
+    var sierrasHardRoutes = [
+{ name: "The Ecstasy of Gold - Bubbs Creek Wall ", location: "Shaun Reed, Honz Mikhalek; FFA: Shaun Reed, Dave Meyer "},
+{ name: "Nalazak - Incredible Hulk ", location: "Lucho Rivera and Jake Whittaker, 2011 "},
+{ name: "Brutus of Wyde Memorial Route - Flatiron Butte (Shangri La) ", location: "(FFA Musiyenko Vitaliy, Caitlin Taylor 2014) "},
+{ name: "Crimson Gem - The Juggernaut ", location: "Nate Greenberg, Jim Barnes. July, 2013 "},
+{ name: "The Sword in the Stone - Mt. Chamberlin ", location: "Josh Finkelstein, Chris Brown 2010 "},
+{ name: "Harvest Time - Trapezoid Peak ", location: "Chase Leary, Lisa Coleman, Andy Puhvel "},
+{ name: "Rasta Root - Trapezoid Peak ", location: "Andy Puhvel, Chase Leary, Lisa Coleman "},
+{ name: "Southeast Arete - Castle Dome ", location: "Vitaliy Musiyenko and Caitlin Taylor (July 19th, 2014) "},
+{ name: "Blood of the Monkey - Keeler Needle ", location: "Myles Moser & Amy Ness (2012) "},
+{ name: "Lost in the Sun - Incredible Hulk ", location: "Luke Stefurak, James R, Keith S, Casey Z. Jonathan G. "},
+{ name: "Twilight Pillar - Norman Clyde Peak ", location: "Don Jensen and Frank Sarnquist "},
+{ name: "Welcome to Krackizstan - Mt. Hitchcock ", location: "Musyiyenko, Vitaliy and Ferro, Adam (07/2016) "},
+{ name: "Wonder Woman - The Thing ", location: "Brandon Adams, Trish Matheny 2023 "},
+{ name: "Wind Shear - Incredible Hulk ", location: "Peter Croft, Dave Nettle, Andy Puhvel, Sept 2, 2014 "},
+{ name: "Sun Burn (aka Solar Burn) - Incredible Hulk ", location: "Dave Nettle & Peter Croft - July 2008 "},
+{ name: "Bloody Corner - Mt. Russell ", location: "Alan Bartlett, Alan Pietransanta, September 1979 "},
+{ name: "East Face (aka East Pillar) - Mt. Barnard East Peak (aka Peak 13,680 +) ", location: "Galen Rowell and Tim Auger (April 1972) "},
+{ name: "7th Gable, or Spiral Ridge - Seven Gables ", location: "Steve McGee Jack West July 1998 "},
+{ name: "East Face - Aiguille Extra ", location: "Bill Sumner & Mike Heath 1971, FFA Pat Brennan & Ken Kenaga 1993 "},
+{ name: "What's Up Bubb? - Bubbs Creek Wall ", location: "Rob Brown & Gene Mayo III 2000; FFA Luke Stefurak & Casey Zak 2014 "},
+{ name: "Firebird Ridge - Norman Clyde Peak ", location: "July 1975: Fred Beckey, Mike Graber, Dave Black "},
+{ name: "East Buttress - Aiguille Extra ", location: "FA: Werner Landry & Kenny Cook (5.10 A2: 1978), FFA C.S. & James Holland (5.10+: 2023) "},
+{ name: "Eye of the Storm - Incredible Hulk ", location: "Johnny Copp (first 4), Nils Davis and Brent Obinger "},
+{ name: "It's a Trap!...ezoid - Trapezoid Peak ", location: "Michael Drake, Haley Lucille, Rett English, Matt Carpenter July 2020 "},
+{ name: "Watchtower - North Face - Tower Peak ", location: "Alyse Bertenthal, Jay Kumar, Bob Steed, August 2009 "},
+{ name: "Donathan Mustache -  Sky Blue Lake Basin ", location: "Lenore Sparks and CS, June 15th 2021 "},
+{ name: "Pressure Drop - Mt. Hitchcock ", location: "Mike Pond, Andy Stephen 2020 "},
+{ name: "North Buttress (aka the Dragrace aka the Dragway) - Dragtooth ", location: "FA: Reed Cundiff & Jack Miller, 1971 FFA: Jay Smith & Paul Crawford, 1983 "},
+{ name: "North Buttress Variation. - Mt. Goode ", location: "Peter Croft and Hayden Kennedy "},
+{ name: "Hanshi - Bubbs Creek Wall ", location: "Townsend Brown and Friends 2015 to 2019 FFA Townsend Brown, & Rob Kennedy "},
+{ name: "Nightcrawlers - The Juggernaut ", location: "Shelton Hatfield, Alex Vaught, Pepe Silvia, September 2018 "},
+{ name: "Dabeloni Dihedral - University Peak Cirque ", location: "Aaron Davis, David Tellechea. June 2022 "},
+{ name: "Gargoyle - Merriam Peak ", location: "Peter Croft & Lisa Rands - August, 2011 "},
+{ name: "Southeast Face - Petit Griffon ", location: "Dave McDonald, David Harvey "},
+{ name: "West Arete - Mt. Winchell ", location: "Galen Rowell, Warren Harding "},
+{ name: "Planaria - Temple Crag ", location: "Gordon Wiltsie and Jay Jensen, September 1977 "},
+{ name: "Mindy - Mt. Lamarck ", location: "Cam Smith, Lenore Sparks "},
+{ name: "Infinity Pool -  Sky Blue Lake Basin ", location: "Chaz Langelier and CS, June 14th 2021 "},
+{ name: "The Foundation Crack - Merriam Peak ", location: "Josh Janes - June 2016 "},
+{ name: "Too Much Fun - Arctic Lake Wall ", location: "Adam Ferro and Vitaliy Musiyenko, 2017 "}
+    ];
+
+    var jtreeEasyRoutes = [
+{ name: "SW Corner - Headstone Rock ", location: "Mark Powell and Bill Feuerer, 1958 "},
+{ name: "Double Cross -  The Old Woman ", location: "FFA: Woody Stark, Bill Briggs and Dick Webster, 1967 "},
+{ name: "Illusion Dweller -  The Sentinel ", location: "Matt Cox, Spencer Lennard and Steve Emerson, 1973 "},
+{ name: "Mental Physics - Lenticular Dome ", location: "Wendell 'the Dean' Broussard and partners early 1970's "},
+{ name: "Bird of Fire -  Isles in the Sky ", location: "John Long & Ray Ochoa, May 1974 "},
+{ name: "Sail Away - Hidden Tower ", location: "Chick Holtkamp, Randy Russell and John Lakey, February 1978 "},
+{ name: "Leave it to Beaver (aka The Beaver) -  Sports Challenge Rock ", location: "Dave Evans & Jim Angione, 1/78 FFA: (TR) John Bachar 3/78, FL: J. Bachar 1979 "},
+{ name: "Equinox -  Jerry's Quarry and Lost Pencil Areas ", location: "Dennis Johnson, 1972; FFA (TR) John Bachar, May 1978; First Lead: Tony Yaniro, August1980 "},
+{ name: "Touch and Go - Touch and Go Face ", location: "Matt Cox, Bobby Kessinger, and Dan Ahlborn, January 1976 "},
+{ name: "O'Kelley's Crack - Rusty Wall ", location: "Tobin Sorenson, Jim Wilson, Dean Fidelman & Gary Ayres, March 1975 "},
+{ name: "Figures on a Landscape (aka Monkey on My Back) -  The Astro Domes ", location: "Randy Vogel and Dave Evans, November 1978 "},
+{ name: "Coarse and Buggy -  Dihedral Rock ", location: "FA: Bill Mikus and Bob Dominick, December 1970, FFA: Spencer Lennard, February 1978 "},
+{ name: "Heart of Darkness - Conrad Rock - Heart of Darkness Corridor ", location: "Jim Thornburg, 1990 "},
+{ name: "Rubicon - Rubicon Formation ", location: "John Bald & Hank Levine, 1976 FFA: (TR) John Long and others FL: Jon Lonne, Herb Laeger, Rich Smith & Eve Uiga, December 1978 "},
+{ name: "Solid Gold -  The Astro Domes ", location: "Herb Laeger, Jon Lonne, Jim Wilson & Mike Jaffe, March 1977 "},
+{ name: "Clean and Jerk -  Sports Challenge Rock ", location: "Tim Powell, Kevin Powell & Dan Ahlborn, April 1977 "},
+{ name: "Tax Man - IRS Wall ", location: "Tim Powell and Dan Ahlborn, April 1976 "},
+{ name: "Wangerbanger - Rusty Wall ", location: "Tobin Sorenson, 1975 "},
+{ name: "EBGB's - EBGB Block Area ", location: "Dave Houser, Mike Waugh, Jan McCollum & Nick Badyrka, April 1977 "},
+{ name: "Exorcist -  Hall of Horrors ", location: "Tobin Sorenson, Jim Wilson, Dick Shockley & Dean Fidelman, February 1974 "}
+    ];
+
+    var jtreeMediumRoutes = [
+{ name: "Breakfast of Champions -  The Astro Domes ", location: "Ed Ehrenfeld, Eve Uiga and Herb Laeger, December 1977 "},
+{ name: "More Monkey than Funky -  Barker Dam Area ", location: "John Bachar, 1976 "},
+{ name: "Heart and Sole - Echo Rock - West Face ", location: "Herb Laeger, Rich Smith & Jai Watts, January 1978 "},
+{ name: "Poodles are People Too -  Hemingway Buttress ", location: "Randy Vogel and Charles Cole, February 1980 "},
+{ name: "Stingray - Iguana Dome ", location: "FA: Mike Paul on TR May 1988, FFA: The one and only Hidetaka Suzuki a month later "},
+{ name: "Hot Rocks - Rock Hudson ", location: "John Long, Richard Harrison and Ging Gingrich, February 1973 FFA: John Bachar, 1979 "},
+{ name: "The Acid Crack -  Arid Piles ", location: "(TR) John Bachar, 1982, FL: John Bachar, 1983 "},
+{ name: "Imaginary Voyage - Imaginary Voyage Formation ", location: "John Long and Richard Harrison, 1977 "},
+{ name: "Run For Your Life - Tumbling Rainbow Formation ", location: "Charles Cole, Dave Houser & Herb Laeger, 1978 "},
+{ name: "Popular Mechanics -  White Cliffs of Dover ", location: "Mari Gingery, Mike Lechlinksi and John Long, December 1977 "},
+{ name: "Big Moe -  Echo Cove ", location: "(TR) John Bachar, Mike Lechlinski, Mari Gingery, 1980. "},
+{ name: "Asteroid Crack - Asteroid Belt ", location: "Jan McCollum (A3) FFA: John Bachar? "},
+{ name: "Firewater Chimney -  The Valley of Kings ", location: "Steve Sutton and Karen Roseme, November 1992 "},
+{ name: "High Strung - Foolproof Tower ", location: "Herb Laeger and Rich Smith, March 1977 "},
+{ name: "Swept Away - Echo Rock - South Face ", location: "Dave Evans and Randy Vogel, November 1977 "},
+{ name: "Father Figure -  Barker Dam Area ", location: "Scott Cosgrove, April 1988 "},
+{ name: "Sidewinder -  Steve Canyon ", location: "Kevin Worral & Eric Schoen, June 1974 "},
+{ name: "Perpetual Motion -  Virgin Islands Area ", location: "Vaino Kodas, Tony Yaniro, 1981 "},
+{ name: "Ace of Spades -  White Cliffs of Dover ", location: "Mike Lechlinski, John Long & Craig Fry, November 1977 "},
+{ name: "LA Woman - Lost Horse Wall - Left Side ", location: "Bob Gaines, Frank Bentwood, Kelly Vaught, and Chris Baumann, January 2014 "}
+    ];
+
+    var jtreeHardRoutes = [
+{ name: "Vector -  Loveland ", location: "Tony Yaniro & Randy Leavitt, 1982 "},
+{ name: "Between a Rock and a Hard Place -  Virgin Islands Area ", location: "Tony Yaniro, Toivo Kodas, and Vaino Kodas, 1981 "},
+{ name: "Perfect Fingers -  Walt's Rocks ", location: "Gene West & Walt Shipley, 1989 "},
+{ name: "Dangling Woo Li Master -  Diarrhea Dome ", location: "Craig Fry, Alan Roberts, Dave Evans, Margy Floyd & Kelly Carrignan, February 1985 "},
+{ name: "Sole Fusion - Echo Rock - South Face ", location: "John Bachar, 1983 "},
+{ name: "The Maneater - Maneater Rock ", location: "Mike Paul and Bill Russell "},
+{ name: "I Can't Believe It's a Girdle - Freak Brothers Dome ", location: "(P1): Randy Vogel, Charles Cole, 82 (P2): Phil Broscovak, Vogel, Jim Angione, 11/78 (P3): Vogel, Dave Houser, Maria Cranor (P4) Broscovak, Bartlett "},
+{ name: "Physical Graffiti - Anasazi Wall ", location: "Pitch 1: (TR) Bob Gaines, Erik Murdoch, December 2004, Complete Route: Bob Gaines, Russell Romero, January 2005 "},
+{ name: "Astroturf -  The Astro Domes ", location: "Ed Kaufer and Keith Cunning, 1981, First continuous ascent, Peter Croft & Bob Gaines 12/99 "},
+{ name: "Hidden Arch -  Houser Buttress Area ", location: "Herb Laeger and Rich Smith, May 1977; FFA: Mike Lechlinski, Lynn Hill and John Long, November 1979 "},
+{ name: "Alf's Arete - IRS Wall ", location: "Alan Nelson & Alf Randell, 1987 "},
+{ name: "Where Have all the Cowboys Gone -  Saddle Rocks ", location: "Bob Gaines, Tom Atherton, Cal Gerberding & Alan Bartlett, September 1999 "},
+{ name: "Field and Stream -  White Cliffs of Dover ", location: "Tony Sartin and Bob Gaines, September 2012 "},
+{ name: "Throbbing Gristle -  Loveland ", location: "(TR) Alan Nelson, 1983; First Lead: Sean Villanueva Odriscoll, 2014 (?) "},
+{ name: "Tic Tic Boom - Tumbling Rainbow Formation ", location: "Roy McClenahan, 1989 "},
+{ name: "Bikini Whale - The Hidden Cliff ", location: "(TR) Antoine & Marc LeMenestrel 1984, FL: Kurt Smith, December 1987 "},
+{ name: "Crosstown Traffic - Lost Horse Wall - Left Side ", location: "Tony Sartin and Bob Gaines, January, 2021 "},
+{ name: "29 Palms -  Arid Piles ", location: "Tony Yaniro, Mike Lechlinski, Vaino Kodas and Alan Nelson, 1981 "},
+{ name: "Canadian Driftwood (aka The Man Who Shot Liberty Valance) - Upper Dodge City ", location: "Dave Cotton & a BP Canadian, 1986 "},
+{ name: "Runaway - Tumbling Rainbow Formation ", location: "Bob Gaines, Dana Adler, Yvonne Gaines, October 1997 "},
+{ name: "Trapeze - Intersection Rock ", location: "Bob Gaines, John Long, 4/87 "},
+{ name: "Prime Real Estate -  The Land that Time Forgot ", location: "Tony Sartin, Oct 2005 "},
+{ name: "The Chameleon -  The Sentinel ", location: "(TR) John Bachar & Mike Lechlinksi, December 1979, FL: Dave Mayville & Paul Borne, 1989 "},
+{ name: "The Lobster -  Sports Challenge Rock ", location: "(TR) John Bachar and Mike Lechlinski, 1980, FL: Tony Yaniro, 1981 "},
+{ name: "Totally Tubular -  Loveland ", location: "Alan Nelson and Denise Brown, January 1983 "},
+{ name: "Overnight Sensation - Cyclops Rock ", location: "John Wolfe & Rob Stahl, 11/70, FFA: (TR) Rick Cashner and Don Reid., 1979, FL: Dave Mayville et al, 8/90 "},
+{ name: "The Last Stand -  The Valley of Kings ", location: "Steve Sutton, Karen Roseme, November 1992 "},
+{ name: "Such a Savage -  The Astro Domes ", location: "Spencer Lennard and Craig Fry, November 1977 "},
+{ name: "Space Mountain -  Saddle Rocks ", location: "Mike Hatchett, Dave Hatchett, Chris Snyder, Tracy Dorton & Brian Mulvey, 1988 "},
+{ name: "White Rain -  Walt's Rocks ", location: "Walt Shipley, 1989 "},
+{ name: "Scary Poodles -  Hemingway Buttress ", location: "Darryl Nakahira & Randy Vogel, November 1982 "},
+{ name: "Too Secret to Find - Hidden Dome ", location: "Pete Charkin, Alan Roberts & Bruce Howatt, 1985 "},
+{ name: "Bighorn Dihedral - Suicide Horn Rock ", location: "Gingery, Lechlinski and Bachar 1982 "},
+{ name: "Baby Apes -  Peyote Cracks Formation ", location: "(TR) John Bachar, March, 1980 FL: Hidetaka Suzuki, 1982 (?) "},
+{ name: "Hyperion - Grey Giant ", location: "D. O'Kelley & D. Davis ,1970: FFA - J. Long, K. Worrall, T. Sorenson, & R. Accomazzo, 1974 "},
+{ name: "Black President - Elephant Arches ", location: "Craig Fry, Dave Evans & Dave Bruckman, December 1984 "},
+{ name: "Sun Runner - The Wedge ", location: "Dino Banco "},
+{ name: "Poodlephile -  Saddle Rocks ", location: "Chris Miller & Jim Hammerle, December 1997 "},
+{ name: "Eureka! - Rattlesnake Buttress ", location: "Bob Gaines, 1992 "},
+{ name: "ZZZZZ Direct Start -  Little Hunk ", location: "Bob Gaines, Todd Gordon, and Sara Matisse, Oct. 2012 "}
+    ];
+
+    var sfbayEasyRoutes = [
+{ name: "The Choss Whisperer - Motown ", location: "Jim Thornburg, 2021 "},
+{ name: "The Bronze Hog -  Vent 5 ", location: "Lucho Rivera, 2020 "},
+{ name: "Endless Bummer - Endless Bummer Rock ", location: "Scott Frye "},
+{ name: "Micro Aggression - Kim's gym (aka Kym's Gym) ", location: "Jim Thornburg, 2019 "},
+{ name: "Sweet Potato - Blind Man's Bluff ", location: "Jordy Morgan, Tracy Kelly, Bradley Pierce "},
+{ name: "One Day As A Tiger - Cobblestone Wall ", location: "Noah Dailey 2023 "},
+{ name: "Better Than Sex.... Porpoises - Emperor Boulder ", location: "Jim Thornburg "},
+{ name: "The Inner Game - Cobblestone Wall ", location: "Noah Dailey, Trevor Bloom 2023 "},
+{ name: "Wubble -  Vent 5 ", location: "Jim Thornburg "},
+{ name: "Surf Safari - Endless Bummer Rock ", location: "Scot Frye, 1992 "},
+{ name: "Clamydia - Waterfall Cliff ", location: "David Caunt "},
+{ name: "Sex Porpoises - Main Rock Mickey's", location: "Jim Thornburg, 1990 "},
+{ name: "Sign Language - The Egg ", location: "Ken Ariza "},
+{ name: "Starfish Enterprise - Tower of the People / The Nug ", location: "Lucho Rivera and Noah Dailey 2021 "},
+{ name: "Egghead - The Egg ", location: "Jim Thornburg, 1988 "},
+{ name: "Toxic Masculinity - Kim's gym (aka Kym's Gym) ", location: "Jim Thornburg "},
+{ name: "Mickey's Beach Arete - Main Rock Mickey's", location: "Jim Thornburg "},
+{ name: "Boromir -  Pine Canyon ", location: "Sean Burke and Todd Worsfold "},
+{ name: "Get Buck In The Yolk - The Egg ", location: "Noah Dailey, Jim Thornburg, Kim Pfabe, 2020 "},
+{ name: "Courtney - Main Rock Mickey's", location: "Eric Kohl 96 "}
+    ];
+
+    var sfbayMediumRoutes = [
+{ name: "Super Flower Blood Moon - Tower of the People / The Nug ", location: "Lucho Rivera and Noah Dailey 2021 "},
+{ name: "Fish n Chip - Tower of the People / The Nug ", location: "Lucho Rivera and Noah Dailey 2021 "},
+{ name: "Krokus - Indian Rock ", location: "David Caunt "},
+{ name: "Scorpio Rising - Main Rock Mickey's", location: "Jim Thornburg "},
+{ name: "Holy Mackerel - Main Rock Mickey's", location: "Marcos Nunez "},
+{ name: "Redneck Rampage -  Pine Canyon ", location: "Todd Worsfold and Sean Burke "},
+{ name: "Deliverance -  Pine Canyon ", location: "Jim Thornburg "},
+{ name: "The Emperor's New Clothes - Emperor Boulder ", location: "Steven Roth, Jim Thornburg "},
+{ name: "I-12 -  Indian Rock Park ", location: "Dick Leonard "},
+{ name: "Chameleon -  Boy Scout Rocks ", location: "Rances Rodriguez, Elek Lane "},
+{ name: "Tiny Dancer - Blind Man's Bluff ", location: "J.Morgan 2019 "},
+{ name: "Dreams of White Porsches - Main Rock Mickey's", location: "Harrison Dekker (tr) Jim Thornburg (lead) "},
+{ name: "Baby Driver - Blind Man's Bluff ", location: "J. Morgan 2019 "},
+{ name: "Captain Hook - The Treasure Chest ", location: "Morgan/Nunez, 2001 "},
+{ name: "Megalodon - Main Rock Mickey's", location: "Julian Kraus-Polk "},
+{ name: "Calistoga Rodeo - Blind Man's Bluff ", location: "Jerry Dodrill, Eric Berghorn, 2019 "},
+{ name: "The Patriot - Shipwreck Wall ", location: "Marcos Nunez "},
+{ name: "Beast of Burden - The Bear ", location: "Jerry Dodrill (1998) "},
+{ name: "Crows Nest - Shipwreck Wall ", location: "Jordy Morgan "},
+{ name: "The Way of the Road - The Bubble ", location: "Jordy Morgan "}
+    ];
+
+    var sfbayHardRoutes = [
+{ name: "New Potato - Blind Man's Bluff ", location: "Jordy Morgan... April 2023 "},
+{ name: "Sturgeon - Main Rock Mickey's", location: "FFA Jim Thornburg 1988 "},
+{ name: "This is your Brain on Drugs - The Egg ", location: "Kenny Ariza, 1999 "},
+{ name: "Jason and the Argonauts - The Bear ", location: "Jason Campbell and Jordy Morgan (1991) "},
+{ name: "Big Buddy - The Bubble ", location: "Harry Rochford and Jordy Morgan "},
+{ name: "Above the Law - Waterfall Cliff ", location: "David Caunt "},
+{ name: "Squid Vicious - Main Rock Mickey's", location: "Jim Thornburg 1995 (Harrison Dekker TR 1988) "},
+{ name: "Big Tuna - Main Rock Mickey's", location: "Greg Arnold (May 26, 2014) "},
+{ name: "Naked and Disfigured - Main Rock Mickey's", location: "Ken Ariza "},
+{ name: "Ultramega -  Table Rock ", location: "Jim Thornburg "},
+{ name: "Railing Moss -  Boy Scout Rocks ", location: "Rances Rodriguez, Elek Lane, Lenore Sparks, Liyuan Hao "},
+{ name: "Rectalphobiac - Summit Rock ", location: "Brad Watson (TR) 7/22/91 "},
+{ name: "Jury Duty -  Sea Crag ", location: "Jason Campbell "},
+{ name: "The Beast - The Bear ", location: "Jordy Morgan, with Karl Guthrie and Joe Schwartz, 1988 "},
+{ name: "Ceiling Zero - Kimball Canyon Crag ", location: "Steve Curtis "},
+{ name: "Yardarm - Shipwreck Wall ", location: "Jordy Morgan "},
+{ name: "Swashbuckler - South Face of Sentinel Rock ", location: "Marcos "}
+    ];
+
+    var eastsideEasyRoutes = [
+{ name: "Third Pillar, Regular Route - Dana Plateau ", location: "Phil Bircheff and Bill Bonebrake, 1969 "},
+{ name: "Pratt's Crack -  Pine Creek Canyon ", location: "Chuck Pratt, Bob Swift, early 1970's "},
+{ name: "West Face - Cardinal Pinnacle ", location: "Jay Jensen 1969 "},
+{ name: "Sheila -  Pine Creek Canyon ", location: "John Fischer and Jay Jensen, 1971 "},
+{ name: "[Redacted] - Emergency Room ", location: "Bruce Lella, Todd Graham "},
+{ name: "Looney Binge - Eldorado Roof ", location: "Alf, Marty Lewis, Jeff Schoen, Huey Wilson & Raleigh Collins, 10/91 "},
+{ name: "John Fischer Memorial Route -  Pine Creek Canyon ", location: "Tai and Mary Devore, 2011 "},
+{ name: "John Fischer Memorial Route - PSOM Slab ", location: "Tai and Mary Devore, 2011 "},
+{ name: "The Main Line -  Pine Creek Canyon ", location: "2011, Tai DeVore, Greg Smith, Jeremy Freeman, Trevor Hobbs "},
+{ name: "Queen of the Heartbreaks - Pratt's Crack / Dihedrals Area ", location: "Shaddow Ayala "},
+{ name: "Bony Fingers -  Whitney Portal ", location: "Gary Slate & John AughinbaughThe direct start was put up by Slate, Jeff White, & Leona Mukai "},
+{ name: "Beckey Route -  Whitney Portal ", location: "Fred Beckey and Mike Heath, March 1971, FFA Dean Hobbs, Will Crljenko, February 1977 "},
+{ name: "Ghostrider -  Whitney Portal ", location: "Mike Strassman, Raleigh Collins, Mark Husbands, Charles Byrne, and Jackie Carroll "},
+{ name: "Ghostrider - Whitney Portal Buttress ", location: "Mike Strassman, Raleigh Collins, Mark Husbands, Charles Byrne, and Jackie Carroll "},
+{ name: "O.R.G.asm - Dihedrals ", location: "Scott Ayers & Doug Jaffe, 1989 "},
+{ name: "Towering Inferno - Eldorado Roof ", location: "Lewis, Calder, Croft -- 5/98 "},
+{ name: "Boi-oi-oi-ing! -  Patricia Bowl ", location: "Barry Oswick, Urmas Franosch, Eric Sorenson. 09/03 "},
+{ name: "Blindspot -  Pine Creek Canyon ", location: "Victor Lawson "},
+{ name: "Gorgeous - Gorgeous Towers ", location: "Scott Ayers, Mike Strassman & Eric Rhicard 1989 "},
+{ name: "From Chocolate to Morphine - Faulty Tower ", location: "Fred Berman & Bruce Lella - July, 1991 "}
+    ];
+
+    var eastsideMediumRoutes = [
+{ name: "Dr. Evil - Gotham City ", location: "Marty Lewis, Kevin Calder 6/1999 "},
+{ name: "Crack Kingdom - Cardinal Pinnacle ", location: "Doug Robinson & Jay Jensen / Dean Hobbs & Andy Selters "},
+{ name: "Sendero Luminoso - Solarium ", location: "Joe Rousek & Robert Parker - 1990 "},
+{ name: "Milkylala - The Rocketship - Fifth Canyon ", location: "Bruce Lella & Mike Melkonian, early 2000's "},
+{ name: "V8 Crack - Cardinal Pinnacle ", location: "FA (Aid): Dean Hobbs, 1974. FFA: Mike Graber, Mike Farrell, Rick Wheeler, 1976. "},
+{ name: "Atomic Gecko - Planetarium / Gecko Wall ", location: "Louie Anderson, Larry Kuechlin "},
+{ name: "Rites of Spring -  Pine Creek Canyon ", location: "Kevin Leary, Bill Taylor "},
+{ name: "Moment of Zen -  Pine Creek Canyon ", location: "Austin Archer & Rick Ziegler "},
+{ name: "Moment of Zen - Lamb Canyon Wall ", location: "Austin Archer & Rick Ziegler "},
+{ name: "Holey Wars - Mothership Cliff ", location: "bolted by Todd Graham back in the 90's - never truly redpointed until 2012 "},
+{ name: "Espresso Crack -  Little Egypt ", location: "Kevin Leary (TR), Vern Clevenger (lead) "},
+{ name: "Grindrite - Gotham City ", location: "Kevin Calder/Marty Lewis "},
+{ name: "Pick Pocket - Holy Trinity ", location: "John Bachar, Rick Cashner, 1988 "},
+{ name: "Darshan (aka Ripoff) - Upper Crust ", location: "Gary Slate, Joe Rousek, Kevin Leary + some asshole who snaked it, 10/89 "},
+{ name: "Enterprise - The Dilithium Crystal ", location: "Tom Herbert, 1990 "},
+{ name: "Superfly - Cracked Towers ", location: "Marty Lewis, Kevin Calder, 5/97 "},
+{ name: "Expressway - Upper Crust ", location: "Tom Herbert, Sean Greer & Todd Vogel, June 1990 "},
+{ name: "Alabama Hills Gang - The Loaf ", location: "Michael Strassman, Jackie Carroll, Karen Michaelson, Keith Brueckner, Raleigh Collins "},
+{ name: "Slip 'n Slide - Lower Elbow Room ", location: "Kelly Cordner, Barry Oswick (1997) GU "},
+{ name: "Wild Will's Arete -  Area 13 ", location: "Jerry, Sigrid, Lynnea and William Anderson, Aug 1994 "}
+    ];
+
+    var eastsideHardRoutes = [
+{ name: "Tanager (aka '5.11 Crack') -  Whitney Portal ", location: "Bob Harrington & Kevin Leary, 1978 "},
+{ name: "Pull My Finger -  Main Island ", location: "Alan Hirahara, Barry Oswick "},
+{ name: "Fight Club - Mothership Cliff ", location: "Todd Graham & Rob Miller "},
+{ name: "Aurora - Great Wall of China ", location: "FA: Mike Melkonian. Bolted by Bruce Lella "},
+{ name: "Hair Raiser Buttress -  Granite Basin ", location: "Vern Clevenger, Tom Higgins, 1975. "},
+{ name: "Hair Raiser Buttress -  Granite Basin ", location: "Vern Clevenger, Tom Higgins, 1975. "},
+{ name: "Hardly Wallbanger - Pub Wall ", location: "Bruce Lella, Marty Lewis, & Fred Berman - November, 1992 "},
+{ name: "The Prow - Cardinal Pinnacle ", location: "Gordon Wiltsie, Jay Jensen (FA, 1970's) -- Dale Bard, Bob Harrington (FFA crux pitch, 1980's) -- Peter Croft, Dayle Mazzarella (FFA entire route, 2000 "},
+{ name: "The Speed of Life -  Ellery Bowl ", location: "Don Reid and Chris Falkenstein, July 1981 "},
+{ name: "Pinkpoint Panther - Supreme Wizard Formation ", location: "Dan mcDevitt "},
+{ name: "Cromagnon -  Dike Wall ", location: "Kevin Calder, Marty Lewis "},
+{ name: "The Megaplex - Mustache Wall ", location: "Lewis,Calder "},
+{ name: "Lava Haul - Flavin Haven ", location: "Kelly Cordner "},
+{ name: "Flame Thrower - Mustache Wall ", location: "Marty Lewis, Kevin Calder "},
+{ name: "Yellow Peril - Great Wall of China ", location: "11/1999, Peter Croft, Dayle Mazzarella "},
+{ name: "Pangborn - The Loaf ", location: "Michael Strassman & Jackie Carroll "},
+{ name: "Wacked Scenario - Gorgeous Towers ", location: "Lewis, Calder - 11/2000 "},
+{ name: "Sex Packets - Holy Trinity ", location: "Scott Ayers, Mike Strassman, Eden Masters, Jay Ladin, 1990, GU "},
+{ name: "Excelsior - Mothership Cliff ", location: "Tom Herbert, March 1990 "},
+{ name: "He She - Gong Show Wall ", location: "Mike Strassman, Henry Means, Scott Ayers, and Paul Linaweaver ('92) "},
+{ name: "Love Stinks - Banana Belt ", location: "Joe Rousek and Tony Puppo, 2/90 "},
+{ name: "Coven (Seriously Though) - Mustache Wall ", location: "Marty Lewis, Kevin Calder, Steve Calder (Aug, '04) "},
+{ name: "Trailer Tramp - Trailerpark ", location: "Dave Lane, Tai DeVore, 2016 GU "},
+{ name: "Subatomic - Planetarium / Gecko Wall ", location: "Marty Lewis & Tai Devore "},
+{ name: "Hang 'em High - The Western Wall ", location: "Michael Strassman, Jackie Carroll 1998 "},
+{ name: "Modern Trad -  Patricia Bowl ", location: "Todd Graham, Brian Carkeet (July, '02) "},
+{ name: "Anything Goes - Gong Show Wall ", location: "Scott Ayers, John Fowler, Cameron Guthrie (1992) "},
+{ name: "Spaceballs - Planetarium / Gecko Wall ", location: "Ben Ditto and Katie Lambert "},
+{ name: "Borrowing From Tradition -  Area 13 ", location: "Jerry, Sigrid, Lynnea and William Anderson "},
+{ name: "There Goes the Neighborhood - Monkey to Monk Cliff ", location: "Fred Berman Stephanie Alessandrone Marty Lewis "},
+{ name: "Still Not A Player - Diamond Face ", location: "Marty Lewis, Tai DeVore, Darrell Hensel "},
+{ name: "It's Not The Wheat - Mustache Wall ", location: "Brian Ketron, Tai Devore and Trevor Hobbs "},
+{ name: "Corona - Great Wall of China ", location: "Peter Croft "},
+{ name: "Short but Stout - Crack of Noon Buttress ", location: "Patrick O'Donnell "},
+{ name: "Sideshow - Gong Show Wall ", location: "Scott Ayers and Eden Masters ('90) "},
+{ name: "Sons of Liberty -  Patricia Bowl ", location: "Graham & Carkeet "},
+{ name: "Gangway -  Whitney Portal ", location: "Peter Croft "},
+{ name: "Klingon - The Dilithium Crystal ", location: "Gary Slate, Bruce Lella ext: Todd Graham "},
+{ name: "Gape Index - Eldorado Roof ", location: "Tom Addison & Greg Jenning - 1991 | Route extension: Peter Croft & Marty Lewis - 1999 "},
+{ name: "Pocket Dance - Banana Belt ", location: "Karine Croft "}
+    ];
+
+    var sonoraEasyRoutes = [
+{ name: "AC Devil Dog - The Grotto ", location: "Mike Stewart, 1991 "},
+{ name: "Rawhide - The Grotto ", location: "Grant Hiskes "},
+{ name: "Cock the Hammer -  Road 5N06 Area ", location: "Doug Olmstead (1999) "},
+{ name: "Snake Bite - The Grotto ", location: "Peter Croft, 1989 "},
+{ name: "Delirious -  Columns of the Giants ", location: "John Scott "},
+{ name: "One Fine Day -  Chipmunk Flat ", location: "Greg Barnes, Liz Carstens, 6/97 "},
+{ name: "Insecurity - Jailhouse Rock ", location: "Troy Corliss "},
+{ name: "You Insolent Peasant -  Chipmunk Flat ", location: "Greg Barnes, Barry Hutten, 6/98 "},
+{ name: "The Juice - Jailhouse Rock ", location: "Troy Corliss "},
+{ name: "Spin Doctor -  Columns of the Giants ", location: "Tom Herbert "},
+{ name: "Solstice -  Chipmunk Flat ", location: "L. and E. Stefke, 6/21/23 "},
+{ name: "The Governor - Jailhouse Rock ", location: "Todd Graham, 90s "},
+    ];
+
+    var sonoraMediumRoutes = [
+{ name: "Haul of Justice - Jailhouse Rock ", location: "Tom Addison "},
+{ name: "Three Strikes And You're Out - Jailhouse Rock ", location: "Todd Graham, 90s "},
+{ name: "Overhaul - Jailhouse Rock ", location: "Tom Addison "},
+{ name: "Smooth Criminal - Jailhouse Rock ", location: "Terence Tseng "},
+{ name: "Emigrant Labor - Emigrant Labor ", location: "Ryan Myers, Damian Noe (08/15) "},
+{ name: "Not Pneumonia -  Burst Rock ", location: "John Greer, Camille Hacket, August 2015 "},
+{ name: "Four Days Off -  Burst Rock ", location: "B. Young, J Lundeen, H. Wolfe, 1999 "},
+{ name: "Puffin' Stuff -  Burst Rock ", location: "D. Clay, 1996 "},
+{ name: "Electric Chair - Jailhouse Rock ", location: "Todd Graham, early 90s "},
+{ name: "Life Sentence - Jailhouse Rock ", location: "Dave Schultz "},
+{ name: "Mr. Microphone -  Columns of the Giants ", location: "John Scott "},
+    ];
+
+    var sonoraHardRoutes = [
+{ name: "La Dentista (aka Behemoth) -  Columns of the Giants ", location: "Brian Carkeet "},
+{ name: "Blade Runner -  Columns of the Giants ", location: "ZachP, Nov 2020 "},
+{ name: "Atomic Sky -  Columns of the Giants ", location: "John Scott "},
+{ name: "Cassiopeia -  Chipmunk Flat ", location: "J. Dodrill, A. Berge, 2008 "},
+{ name: "Spread Sheet -  Columns of the Giants ", location: "Dodrill, Berghorn, Jensen 2011 "},
+{ name: "Crystal Planet -  Road 5N06 Area ", location: "David Clay "},
+{ name: "Funny Man - Midwall ", location: "John Wiliams "},
+{ name: "The sincerest form of flattery -  Chipmunk Flat ", location: "Brad Yound and David Clay (2000) "},
+{ name: "Dry Bones Live Again -  Chipmunk Flat ", location: "Joel Primrose, Roger Putnam, Robin Batha Putnam "},
+{ name: "Raise the Dead -  Chipmunk Flat ", location: "Roger Putnam, Joel Primrose, Justin Jendza July 2015 "},
+{ name: "Love Lies Bleeding -  Chipmunk Flat ", location: "Brad Young, Aaron McDonald, Roger Putnam, August 2015 "},
+{ name: "Heaven's Staircase - God's Bath ", location: "July 31st 2020 "},
+{ name: "The Ancient Dwarf - The Center Dwarf ", location: "Robert Behrens "}
+    ];
+
+
+    var options = document.querySelectorAll('.option');
+    var resultText = document.getElementById('result');
+    var streakText = document.getElementById('streak');
+    var streakCount = 0;
+    var topScore = 0;
+    var includedLocations = []; // Stores included locations
+
+    // Adding event listeners for region buttons
+    document.getElementById('yosemiteBtn').addEventListener('click', function() {
+        toggleLocation('yosemite');
+    });
+
+    document.getElementById('tuolumneBtn').addEventListener('click', function() {
+        toggleLocation('tuolumne');
+    });
+
+    document.getElementById('tahoeBtn').addEventListener('click', function() {
+        toggleLocation('tahoe');
+    });
+
+    document.getElementById('sierrasBtn').addEventListener('click', function() {
+        toggleLocation('sierras');
+    });
+
+    document.getElementById('jtreeBtn').addEventListener('click', function() {
+        toggleLocation('jtree');
+    });
+
+    document.getElementById('sfbayBtn').addEventListener('click', function() {
+        toggleLocation('sfbay');
+    });
+
+    document.getElementById('eastsideBtn').addEventListener('click', function() {
+        toggleLocation('eastside');
+    });
+
+    document.getElementById('sonoraBtn').addEventListener('click', function() {
+        toggleLocation('sonora');
+    });
+
+    // Function to toggle included locations
+    function toggleLocation(location) {
+        var index = includedLocations.indexOf(location);
+        if (index === -1) {
+            includedLocations.push(location);
+        } else {
+            includedLocations.splice(index, 1);
+        }
+        streakCount = 0; // Reset streak count when locations change
+        displayQuestion();
+        updateActiveButtons();
+        streakText.innerText = 'Streak: ' + streakCount; // Update streak count display
+    }
+
+    // Function to get a random route based on included locations and streak count
+    function getRandomRoute() {
+        var allRoutes = [];
+        includedLocations.forEach(function(location) {
+            var routes;
+            if (streakCount <= 5) {
+                routes = window[location + 'EasyRoutes'];
+            } else if (streakCount <= 10) {
+                routes = window[location + 'MediumRoutes'];
+            } else {
+                routes = window[location + 'HardRoutes'];
+            }
+            allRoutes = allRoutes.concat(routes);
+        });
+        return allRoutes[Math.floor(Math.random() * allRoutes.length)];
+    }
+
+    // Function to display the question
+    function displayQuestion() {
+        var selectedRoute = getRandomRoute();
+        document.getElementById("climb-name").textContent = selectedRoute.name;
+
+        var correctLocation = selectedRoute.location;
+
+        // Get all unique locations from available routes
+        var uniqueLocations = [];
+        includedLocations.forEach(function(location) {
+            var routes;
+            if (streakCount <= 5) {
+                routes = window[location + 'EasyRoutes'];
+            } else if (streakCount <= 10) {
+                routes = window[location + 'MediumRoutes'];
+            } else {
+                routes = window[location + 'HardRoutes'];
+            }
+            routes.forEach(function(route) {
+                if (!uniqueLocations.includes(route.location)) {
+                    uniqueLocations.push(route.location);
+                }
+            });
+        });
+
+        // Shuffle unique locations array
+        shuffleArray(uniqueLocations);
+
+        // Ensure correct location is included and shuffle again
+        var shuffledOptions = [correctLocation];
+        shuffleArray(shuffledOptions);
+
+        // Choose three additional unique locations for options
+        for (var i = 0; i < 3; i++) {
+            var optionLocation = uniqueLocations[i];
+            if (optionLocation !== correctLocation) {
+                shuffledOptions.push(optionLocation);
+            }
+        }
+
+        // Shuffle options again
+        shuffleArray(shuffledOptions);
+
+        // Set options in DOM
+        options.forEach(function(option, index) {
+            option.textContent = shuffledOptions[index];
+            option.setAttribute('data-correct', option.textContent === correctLocation ? 'true' : 'false');
+        });
+    }
+
+    // Fisher-Yates shuffle algorithm
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    // Function to update top score
+    function updateTopScore() {
+        if (streakCount > topScore) {
+            topScore = streakCount;
+            document.getElementById('top-score').innerText = 'Top Score: ' + topScore;
+        }
+    }
+
+    // Function to check the answer
+    function checkAnswer(clickedOption) {
+        if (clickedOption.getAttribute('data-correct') === 'true') {
+            resultText.innerText = 'Nice!';
+            streakCount++;
+            updateTopScore(); // Update top score
+        } else {
+            resultText.innerText = 'Gumby! - FA was ' + document.querySelector('.option[data-correct="true"]').textContent;
+            streakCount = 0;
+        }
+        streakText.innerText = 'Streak: ' + streakCount;
+
+        setTimeout(function() {
+            resultText.innerText = '';
+            displayQuestion();
+        }, 2200);
+    }
+
+    // Function to update active buttons
+    function updateActiveButtons() {
+        document.querySelectorAll('button').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        includedLocations.forEach(function(location) {
+            document.getElementById(location + 'Btn').classList.add('active');
+        });
+    }
+
+    // Adding event listeners for options
+    options.forEach(function(option) {
+        option.addEventListener('click', function()
+{
+            checkAnswer(this);
+        });
+    });
+
+    // Initial display of question
+    displayQuestion();
+</script>
+
+</body>
+</html>
+
