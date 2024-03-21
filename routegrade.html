@@ -1028,9 +1028,12 @@
             includedLocations.splice(index, 1);
         }
         streakCount = 0; // Reset streak count when locations change
+        topScore = 0; // Reset top score when locations change
         displayQuestion();
         updateActiveButtons();
         streakText.innerText = 'Streak: ' + streakCount; // Update streak count display
+        document.getElementById('top-score').innerText = 'Top Score: ' + topScore;
+        updateTopScore(); // Update top score
     }
 
     // Function to get a random route based on included locations and streak count
