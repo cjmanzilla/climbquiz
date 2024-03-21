@@ -847,6 +847,7 @@
     var streakCount = 0;
     var topScore = 0;
     var includedLocations = []; // Stores included locations
+    var previousRoutes = []; // Keep track of previously displayed routes
 
     // Adding event listeners for region buttons
     document.getElementById('yosemiteBtn').addEventListener('click', function() {
@@ -909,7 +910,24 @@
             }
             allRoutes = allRoutes.concat(routes);
         });
-        return allRoutes[Math.floor(Math.random() * allRoutes.length)];
+    // Filter out routes that have been displayed before
+    var availableRoutes = allRoutes.filter(function(route) {
+        return !previousRoutes.includes(route.name);
+    });
+
+    // If all routes have been displayed, reset previousRoutes
+    if (availableRoutes.length === 0) {
+        previousRoutes = [];
+        availableRoutes = allRoutes;
+    }
+
+    // Select a random route from availableRoutes
+    var selectedRoute = availableRoutes[Math.floor(Math.random() * availableRoutes.length)];
+    
+    // Add selected route to previousRoutes
+    previousRoutes.push(selectedRoute.name);
+
+    return selectedRoute;
     }
 
     // Function to display the question
