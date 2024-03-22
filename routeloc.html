@@ -961,27 +961,27 @@
         // Shuffle unique locations array
         shuffleArray(uniqueLocations);
 
-        // Ensure correct location is included and shuffle again
-        var shuffledOptions = [correctLocation];
-        shuffleArray(shuffledOptions);
+    // Ensure correct location is included
+    var options = [correctLocation];
+    var uniqueLocationsCopy = uniqueLocations.slice(0); // Make a copy to avoid modifying original array
+    uniqueLocationsCopy.splice(uniqueLocationsCopy.indexOf(correctLocation), 1);
 
-        // Choose three additional unique locations for options
-        for (var i = 0; i < 3; i++) {
-            var optionLocation = uniqueLocations[i];
-            if (optionLocation !== correctLocation) {
-                shuffledOptions.push(optionLocation);
-            }
-        }
-
-        // Shuffle options again
-        shuffleArray(shuffledOptions);
-
-        // Set options in DOM
-        options.forEach(function(option, index) {
-            option.textContent = shuffledOptions[index];
-            option.setAttribute('data-correct', option.textContent === correctLocation ? 'true' : 'false');
-        });
+    // Select three additional unique locations randomly
+    for (var i = 0; i < 3; i++) {
+        var randomIndex = Math.floor(Math.random() * uniqueLocationsCopy.length);
+        options.push(uniqueLocationsCopy[randomIndex]);
+        uniqueLocationsCopy.splice(randomIndex, 1);
     }
+
+    // Shuffle options again
+    shuffleArray(options);
+
+    // Set options in DOM
+    options.forEach(function(option, index) {
+        document.querySelectorAll('.option')[index].textContent = option;
+        document.querySelectorAll('.option')[index].setAttribute('data-correct', option === correctLocation ? 'true' : 'false');
+    });
+}
 
     // Fisher-Yates shuffle algorithm
     function shuffleArray(array) {
@@ -1008,7 +1008,7 @@
             streakCount++;
             updateTopScore(); // Update top score
         } else {
-            resultText.innerText = 'Gumby! - correct location is ' + document.querySelector('.option[data-correct="true"]').textContent;
+            resultText.innerText = 'Gumby! Correct location is ' + document.querySelector('.option[data-correct="true"]').textContent;
             streakCount = 0;
         }
         streakText.innerText = 'Streak: ' + streakCount;
